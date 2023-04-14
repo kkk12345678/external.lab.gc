@@ -1,1 +1,1 @@
-# external.lab.gs
+# Spring Gift Certificate API service
