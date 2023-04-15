@@ -17,7 +17,7 @@ servers:
 tags:
   - name: tag
     description: CRD operations for tag
-  - name: gs
+  - name: gift-certificate
     description: CRUD operations for gift certificate
 paths:
   /tag:
@@ -52,7 +52,7 @@ paths:
                 $ref: '#/components/schemas/Tag'
         '405':
           description: invalid input
-  /tag/all:        
+  /tags:
     get:
       tags:
         - tag
@@ -123,10 +123,10 @@ paths:
           description: invalid ID supplied
         '404':
           description: tag not found
-  /gs:
+  /gift-certificate:
     post:
       tags:
-        - gs
+        - gift-certificate
       summary: Add a new gift certificate
       description: add a new gift certificate
       operationId: addGiftCertificate
@@ -153,7 +153,7 @@ paths:
           description: invalid input
     put:
       tags:
-        - gs
+        - gift-certificate
       summary: Update a gift certificate
       description: update a gift certificate
       operationId: updateGiftCertificate
@@ -204,7 +204,7 @@ paths:
           description: gift certificate not found
     get:
       tags:
-        - gs
+        - gift-certificate
       summary: Find all gift certificates with specified parameters
       description:  find all gift certificates with specified parameters
       operationId: getAllGiftCertificatesWithParameters
@@ -251,10 +251,10 @@ paths:
                   $ref: '#/components/schemas/GiftCertificate'
         '405':
           description: invalid parameters supplied
-  /gs/all:        
+  /gift-certificates:
     get:
       tags:
-        - gs
+        - gift-certificate
       summary: Find all gift certificates
       description: find all gift certificates
       operationId: getdAllGiftCertificates
@@ -272,10 +272,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GiftCertificate'
-  /gs/{gsId}:
+  /gift-certificate/{gsId}:
     get:
       tags:
-        - gs
+        - gift-certificate
       summary: Find gift certificate by ID
       description: Find gift certificate by ID
       operationId: getGiftCertificateById
@@ -303,7 +303,7 @@ paths:
           description: Gift certificate not found
     delete:
       tags:
-        - gs
+        - gift-certificate
       summary: Delete gift certificate by ID
       description: Delete gift certificate by ID
       operationId: deleteGiftCertificate
