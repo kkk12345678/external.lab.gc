@@ -1,0 +1,33 @@
+buildscript {
+	dependencies {
+		classpath 'org.flywaydb:flyway-mysql:9.16.3'
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.flywaydb.flyway' version '9.16.3'
+}
+
+flyway {
+	url = 'jdbc:mysql://localhost:3306/gs'
+	user = 'root'
+	password='x2Aht9LND6g3'
+}
+
+group = 'org.example'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'mysql:mysql-connector-java:8.0.32'
+	compileOnly 'org.projectlombok:lombok:1.18.26'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
