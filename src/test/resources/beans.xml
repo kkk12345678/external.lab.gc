@@ -24,4 +24,5 @@
           class = "org.example.gs.dao.GiftCertificateTagJdbcTemplate">
         <property name = "dataSource" ref = "dataSource" />
     </bean>
+
 </beans>

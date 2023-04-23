@@ -50,6 +50,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Tag'
+        default:
         '405':
           description: invalid input
   /tags:
@@ -60,6 +61,7 @@ paths:
       description: find all tags
       operationId: getAllTags
       responses:
+        default:
         '200':
           description: successful operation
           content:
@@ -100,6 +102,7 @@ paths:
                 $ref: '#/components/schemas/Tag'
         '400':
           description: invalid ID supplied
+        default:
         '404':
           description: tag not found
     delete:
@@ -121,6 +124,7 @@ paths:
           description: successful operation
         '405':
           description: invalid ID supplied
+        default:
         '404':
           description: tag not found
   /gift-certificate:
@@ -149,6 +153,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GiftCertificate'
+        default:
         '405':
           description: invalid input
     put:
@@ -168,7 +173,7 @@ paths:
         - name: name
           in: query
           description: name of the gift certificate that needs to be updated
-          required: false
+          required: true
           schema:
             type: string
         - name: description
@@ -180,14 +185,14 @@ paths:
         - name: price
           in: query
           description: price of the gift certificate that needs to be updated
-          required: false
+          required: true
           schema:
-            type: integer
-            format: int64
+            type: number
+            format: double
         - name: duration
           in: query
           description: duration of the gift certificate that needs to be updated
-          required: false
+          required: true
           schema:
             type: integer
             format: int64
@@ -200,6 +205,7 @@ paths:
                 $ref: '#/components/schemas/GiftCertificate'      
         '405':
           description: invalid parameters supplied
+        default:
         '404':
           description: gift certificate not found
     get:
@@ -211,7 +217,7 @@ paths:
       parameters:
         - name: tagName
           in: query
-          description: gift certificate tag name that needs to be retreived
+          description: gift certificate tag name that needs to be retrieved
           required: false
           schema:
             type: string
@@ -249,6 +255,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GiftCertificate'
+        default:
         '405':
           description: invalid parameters supplied
   /gift-certificates:
@@ -257,8 +264,9 @@ paths:
         - gift-certificate
       summary: Find all gift certificates
       description: find all gift certificates
-      operationId: getdAllGiftCertificates
+      operationId: getAllGiftCertificates
       responses:
+        default:
         '200':
           description: successful operation
           content:
@@ -299,6 +307,7 @@ paths:
                 $ref: '#/components/schemas/GiftCertificate'
         '400':
           description: Invalid ID supplied
+        default:
         '404':
           description: Gift certificate not found
     delete:
@@ -318,6 +327,7 @@ paths:
       responses:
         '400':
           description: Invalid ID supplied
+        default:
         '404':
           description: gift certificate not found
 components:
@@ -348,9 +358,9 @@ components:
           type: string
           example: 'Some description'
         price:
-          type: integer
-          format: int64
-          example: 1500
+          type: number
+          format: double
+          example: 1500.00
         duration:
           type: integer
           format: int64
