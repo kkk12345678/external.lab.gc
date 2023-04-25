@@ -335,11 +335,11 @@ components:
     Tag:
       type: object
       properties:
-        id:
+        tag_id:
           type: integer
           format: int64
           example: 198772
-        name:
+        tag_name:
           type: string
           example: 'Birthday'
       xml:
@@ -347,11 +347,11 @@ components:
     GiftCertificate:
       type: object
       properties:
-        id:
+        gift_certificate_id:
           type: integer
           format: int64
           example: 198772
-        name:
+        gift_certificate_name:
           type: string
           example: 'Birthday certificate'
         description:

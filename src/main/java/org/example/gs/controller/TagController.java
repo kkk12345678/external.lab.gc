@@ -1,65 +1,104 @@
 package org.example.gs.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.example.gs.config.JdbcConfig;
+import org.example.gs.dao.JdbcTagDao;
 import org.example.gs.model.Tag;
 import org.example.gs.service.TagService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.gs.service.TagServiceImpl;
+import org.example.gs.model.GsonResponse;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.Optional;
+import com.google.gson.*;
 
 @Controller
 public class TagController {
+    private static final String OK = "ok";
+    private static final String ERROR = "error";
 
-    @Autowired
-    TagService tagService;
+    private final TagService tagService = new TagServiceImpl(new JdbcTagDao(JdbcConfig.getDataSource()));
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    @GetMapping("/tags")
-    public String getAllTags(Model model) {
-        model.addAttribute("tags", tagService.getAll());
-        return "view_tags";
+    @RequestMapping(value = "/tags", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String getAllTags() {
+        try {
+            GsonResponse<List<Tag>> response = new GsonResponse<>();
+            response.setResult(OK);
+            response.setResponse(tagService.getAll());
+            return gson.toJson(response);
+        } catch (Exception e) {
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse(e.getMessage());
+            return gson.toJson(response);
+        }
     }
 
-    @PostMapping("/tag")
-    public String addTag(@RequestParam String name, Model model) {
+    @RequestMapping(value = "/tag", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String addTag(@RequestParam String name) {
         Tag tag = new Tag();
         tag.setName(name);
         try {
-            tagService.add(tag);
+            tag.setId(tagService.add(tag));
+            GsonResponse<Tag> response = new GsonResponse<>();
+            response.setResult(OK);
+            response.setResponse(tag);
+            return gson.toJson(response);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("message", String.format("Tag with name '%s' already exists.", name));
-            return "400";
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse("Tag with name '" + name + "' already exists.");
+            return gson.toJson(response);
         }
-        return "redirect:tags";
     }
 
-    @GetMapping("/tag/{tagId}")
-    public String getTagById(@PathVariable("tagId") long id, Model model) {
-        Optional<Tag> optional = tagService.getById(id);
-        if (optional.isPresent()) {
-            model.addAttribute("tags", List.of(optional.get()));
-            return "view_tags";
+    @RequestMapping(value = "/tag/{tagId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String getTagById(@PathVariable("tagId") long id) {
+        try {
+            Optional<Tag> optional = tagService.getById(id);
+            if (optional.isEmpty()) {
+                GsonResponse<String> response = new GsonResponse<>();
+                response.setResult(OK);
+                response.setResponse("No tag with id '" + id + "' is present.");
+                return gson.toJson(response);
+            }
+            GsonResponse<Tag> response = new GsonResponse<>();
+            response.setResult(OK);
+            response.setResponse(optional.get());
+            return gson.toJson(response);
+        } catch (Exception e) {
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse(e.getMessage());
+            return gson.toJson(response);
         }
-        model.addAttribute("message", "Invalid 'tagId' parameter.");
-        return "400";
     }
 
-    @DeleteMapping("/tag/{tagId}")
-    public RedirectView deleteTag(@PathVariable("tagId") long id, RedirectAttributes attributes) {
-        Optional<Tag> optional = tagService.getById(id);
-        if (optional.isPresent()) {
-            tagService.remove(optional.get());
-            return new RedirectView("/tags");
+    @RequestMapping(value = "/tag/{tagId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String deleteTag(@PathVariable("tagId") long id) {
+        GsonResponse<String> response = new GsonResponse<>();
+        try {
+            Optional<Tag> optional = tagService.getById(id);
+            if (optional.isEmpty()) {
+                response.setResult(OK);
+                response.setResponse("No tag with id '" + id + "' is present.");
+
+            } else {
+                tagService.remove(optional.get());
+                response.setResult(OK);
+                response.setResponse("Tag with id '" + id + "' successfully deleted.");
+            }
+        } catch (Exception e) {
+            response.setResult(ERROR);
+            response.setResponse(e.getMessage());
         }
-        attributes.addFlashAttribute("message", "Invalid 'tagId' parameter.");
-        return new RedirectView("/400");
+        return gson.toJson(response);
     }
 }

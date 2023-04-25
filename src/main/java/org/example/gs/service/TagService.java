@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TagService {
-    List<Tag> getFromIds(List<Long> ids);
+    List<Tag> getAll();
     long add(Tag tag);
     void remove(Tag tag);
-    List<Tag> getAll();
-
     Optional<Tag> getById(long id);
 }

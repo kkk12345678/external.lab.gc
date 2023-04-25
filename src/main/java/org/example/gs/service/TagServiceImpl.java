@@ -1,47 +1,49 @@
 package org.example.gs.service;
 
-import org.example.gs.dao.TagJdbcTemplate;
+import org.example.gs.dao.EntityDao;
+import org.example.gs.dao.TagDao;
 import org.example.gs.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class TagServiceImpl implements TagService {
-    @Autowired
-    private TagJdbcTemplate tagJdbcTemplate;
+    private final TagDao tagDao;
 
-    @Override
-    public List<Tag> getFromIds(List<Long> ids) {
-        return ids.stream()
-                .map((id) -> tagJdbcTemplate.getById(id).orElseThrow())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public long add(Tag tag) {
-        Optional<Tag> optional = tagJdbcTemplate.getByName(tag.getName());
-        if (optional.isEmpty()) {
-            tagJdbcTemplate.insert(tag);
-        } else {
-            throw new IllegalArgumentException();
-        }
-        return tagJdbcTemplate.getByName(tag.getName()).orElseThrow().getId();
-    }
-
-    @Override
-    public void remove(Tag tag) {
-        tagJdbcTemplate.delete(tag.getId());
+    public TagServiceImpl(TagDao tagDao) {
+        this.tagDao = tagDao;
     }
 
     @Override
     public List<Tag> getAll() {
-        return tagJdbcTemplate.getAll();
+        return tagDao.getAll();
+    }
+
+
+    @Override
+    public long add(Tag tag) {
+        Optional<Tag> optional = tagDao.getByName(tag.getName());
+        if (optional.isEmpty()) {
+            return tagDao.insert(tag);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
-    public Optional<Tag> getById(long id) {
-        return tagJdbcTemplate.getById(id);
+    public void remove(Tag tag) {
+        tagDao.delete(tag.getId());
     }
+
+
+
+    @Override
+    public Optional<Tag> getById(long id) {
+        return tagDao.getById(id);
+    }
+
+
 }

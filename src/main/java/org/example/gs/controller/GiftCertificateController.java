@@ -1,61 +1,91 @@
 package org.example.gs.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.example.gs.config.JdbcConfig;
+import org.example.gs.dao.JdbcGiftCertificateDao;
+import org.example.gs.dao.JdbcTagDao;
 import org.example.gs.model.GiftCertificate;
+import org.example.gs.model.GsonResponse;
+import org.example.gs.model.Tag;
 import org.example.gs.service.GiftCertificateService;
-import org.example.gs.service.GiftCertificateTagsService;
-import org.example.gs.util.SortOrder;
-import org.example.gs.util.SortType;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.gs.service.GiftCertificateServiceImpl;
+import org.example.gs.service.TagService;
+import org.example.gs.service.TagServiceImpl;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class GiftCertificateController {
-    @Autowired
-    GiftCertificateService giftCertificateService;
-    @Autowired
-    GiftCertificateTagsService giftCertificateTagsService;
+    private static final String OK = "ok";
+    private static final String ERROR = "error";
 
-    @GetMapping("/gift-certificates")
-    public String getAllGiftCertificates(@RequestParam(required = false) String sortType,
-                                         @RequestParam(required = false) String sortOrder,
-                                         Model model) {
-        if (sortType == null || sortType.isEmpty()) {
-            sortType = "NAME";
+    private final GiftCertificateService giftCertificateService =
+            new GiftCertificateServiceImpl(
+                    new JdbcGiftCertificateDao(JdbcConfig.getDataSource()),
+                    new JdbcTagDao(JdbcConfig.getDataSource())
+            );
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    @RequestMapping(value = "/gift-certificates", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String getAllGiftCertificates(@RequestParam(required = false) String[] sort,
+                                         @RequestParam(required = false) String[] search,
+                                         @RequestParam(required = false) Integer limit,
+                                         @RequestParam(required = false) Integer page) {
+        try {
+            GsonResponse<List<GiftCertificate>> response = new GsonResponse<>();
+            response.setResult(OK);
+            response.setResponse(giftCertificateService.getAll());
+            return gson.toJson(response);
+        } catch (Exception e) {
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse(e.getMessage());
+            return gson.toJson(response);
         }
-        if (sortOrder == null || sortOrder.isEmpty()) {
-            sortOrder = "ASC";
-        }
-        model.addAttribute("gift_certificates",
-                giftCertificateService.getAll(
-                        SortType.valueOf(sortType.toUpperCase()),
-                        SortOrder.valueOf(sortOrder.toUpperCase())));
-        return "view_gift_certificates";
     }
 
-    @PostMapping("/gift-certificate")
+
+    @RequestMapping(value = "/gift-certificate", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String addGiftCertificate(@RequestParam String name,
                                      @RequestParam(required = false) String description,
                                      @RequestParam double price,
                                      @RequestParam int duration,
-                                     @RequestParam(required = false) String[] tags,
-                                     Model model) {
+                                     @RequestParam(required = false) String[] tags) {
+
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName(name);
         giftCertificate.setDescription(description);
         giftCertificate.setPrice(price);
         giftCertificate.setDuration(duration);
+        giftCertificate.setTags(Arrays.stream(tags).map(Tag::create).collect(Collectors.toList()));
         try {
-            giftCertificateService.add(giftCertificate, tags);
+            giftCertificate.setId(giftCertificateService.add(giftCertificate));
+            GsonResponse<GiftCertificate> response = new GsonResponse<>();
+            response.setResult(OK);
+            response.setResponse(giftCertificate);
+            return gson.toJson(response);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("message", String.format("Gift certificate with name '%s' already exists.", name));
-            return "400";
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse("Gift certificate with name '" + name + "' already exists.");
+        } catch (Exception e) {
+            GsonResponse<String> response = new GsonResponse<>();
+            response.setResult(ERROR);
+            response.setResponse(e.getMessage());
+            return gson.toJson(response);
         }
-        return "redirect:gift-certificates";
+        return null;
     }
+
 }

@@ -1,11 +1,11 @@
 CREATE TABLE tags (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(256) UNIQUE NOT NULL
+    tag_id INT AUTO_INCREMENT PRIMARY KEY,
+    tag_name VARCHAR(256) UNIQUE NOT NULL
 );
 
 CREATE TABLE gift_certificates (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(256) UNIQUE NOT NULL,
+    gift_certificates_id INT AUTO_INCREMENT PRIMARY KEY,
+    gift_certificates_name VARCHAR(256) UNIQUE NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     duration INT NOT NULL,
