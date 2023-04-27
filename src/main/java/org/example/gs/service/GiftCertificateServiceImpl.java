@@ -4,23 +4,34 @@ import org.example.gs.dao.GiftCertificateDao;
 import org.example.gs.dao.TagDao;
 import org.example.gs.model.GiftCertificate;
 import org.example.gs.model.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
-    private final GiftCertificateDao giftCertificateDao;
-    private final TagDao tagDao;
+    @Autowired
+    private GiftCertificateDao giftCertificateDao;
+    @Autowired
+    private TagDao tagDao;
 
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao) {
-        this.giftCertificateDao = giftCertificateDao;
-        this.tagDao = tagDao;
+
+    @Override
+    public List<GiftCertificate> getAll(String parameters) {
+        return giftCertificateDao.getAll(parameters);
     }
 
     @Override
-    public List<GiftCertificate> getAll() {
-        return giftCertificateDao.getAll();
+    public Optional<GiftCertificate> getById(long id) {
+        return giftCertificateDao.getById(id);
+    }
+
+    @Override
+    public Optional<GiftCertificate> getByName(String name) {
+        return giftCertificateDao.getByName(name);
     }
 
     @Override
@@ -33,20 +44,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 tag.setId(tagDao.insert(tag));
                 optional = Optional.of(tag);
             }
+            tag.setId(optional.get().getId());
             giftCertificateDao.insert(giftCertificate.getId(), optional.get().getId());
         }
         return giftCertificate.getId();
     }
 
     @Override
-    public void remove(GiftCertificate giftCertificate) {
-        //TODO
+    public void remove(long id) {
+        giftCertificateDao.delete(id);
     }
 
     @Override
     public void update(GiftCertificate giftCertificate) {
-        //TODO
+        giftCertificateDao.update(giftCertificate);
     }
-
-
 }

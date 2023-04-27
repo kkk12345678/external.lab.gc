@@ -3,12 +3,13 @@ package org.example.gs.dao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.gs.model.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class JdbcTagDao implements TagDao {
     private static final String SQL_INSERT = "insert into tags (tag_id, tag_name) values (default, ?)";
     private static final String SQL_DELETE = "delete from tags where tag_id = ?";
@@ -24,18 +26,16 @@ public class JdbcTagDao implements TagDao {
     private static final String SQL_SELECT_BY_ID = "select * from tags where tag_id = ?";
     private static final String SQL_SELECT_BY_NAME = "select * from tags where tag_name = ?";
 
-    private static final Logger LOGGER = LogManager.getLogger("TAG_DAO");
+    @Autowired
+    private Logger logger;
 
-    private final JdbcTemplate jdbcTemplateObject;
-
-    public JdbcTagDao(DataSource dataSource) {
-        this.jdbcTemplateObject = new JdbcTemplate(dataSource);
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplateObject;
 
     @Override
-    public List<Tag> getAll() {
-        List<Tag> tags = jdbcTemplateObject.query(SQL_SELECT, new TagMapper());
-        LOGGER.info(tags.size() + " tags found");
+    public List<Tag> getAll(String parameters) {
+        List<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters, new TagMapper());
+        logger.info(tags.size() + " tags found");
         return tags;
     }
 
@@ -48,30 +48,30 @@ public class JdbcTagDao implements TagDao {
             return ps;
         }, keyHolder);
         long generatedId = keyHolder.getKey().longValue();
-        LOGGER.info("Generated id : " + generatedId);
+        logger.info("Generated id : " + generatedId);
         return generatedId;
     }
 
     @Override
     public void delete(long id) {
         jdbcTemplateObject.update(SQL_DELETE , id);
-        LOGGER.info("Tag with id : " + id + " deleted");
+        logger.info("Tag with id : " + id + " deleted");
     }
 
     @Override
     public void update(Tag tag) {
         jdbcTemplateObject.update(SQL_UPDATE, tag.getName(), tag.getId());
-        LOGGER.info(tag + " updated");
+        logger.info(tag + " updated");
     }
 
     @Override
     public Optional<Tag> getById(long id) {
         List<Tag> list = jdbcTemplateObject.query(SQL_SELECT_BY_ID, new TagMapper(), id);
         if (list.isEmpty()) {
-            LOGGER.info("No tag found with id : " + id);
+            logger.info("No tag found with id : " + id);
             return Optional.empty();
         }
-        LOGGER.info(list.get(0) + " found");
+        logger.info(list.get(0) + " found");
         return Optional.of(list.get(0));
     }
 
@@ -79,17 +79,11 @@ public class JdbcTagDao implements TagDao {
     public Optional<Tag> getByName(String name) {
         List<Tag> list = jdbcTemplateObject.query(SQL_SELECT_BY_NAME, new TagMapper(), name);
         if (list.isEmpty()) {
-            LOGGER.info("No tag found with name : '" + name + "'");
+            logger.info("No tag found with name : '" + name + "'");
             return Optional.empty();
         }
-        LOGGER.info(list.get(0) + " found");
+        logger.info(list.get(0) + " found");
         return Optional.of(list.get(0));
-    }
-
-    @Override
-    public List<Tag> getByGiftCertificateId(long id) {
-        //TODO
-        return null;
     }
 
     private static class TagMapper implements RowMapper<Tag> {

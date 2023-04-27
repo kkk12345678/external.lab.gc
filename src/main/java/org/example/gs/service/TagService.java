@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface TagService {
     List<Tag> getAll();
     long add(Tag tag);
-    void remove(Tag tag);
+    void remove(long id);
     Optional<Tag> getById(long id);
+    Optional<Tag> getByName(String name);
 }

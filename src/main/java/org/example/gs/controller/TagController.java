@@ -1,104 +1,89 @@
 package org.example.gs.controller;
 
-import org.example.gs.config.JdbcConfig;
-import org.example.gs.dao.JdbcTagDao;
 import org.example.gs.model.Tag;
 import org.example.gs.service.TagService;
-import org.example.gs.service.TagServiceImpl;
-import org.example.gs.model.GsonResponse;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
-import com.google.gson.*;
+import java.util.NoSuchElementException;
 
-@Controller
+@RestController
+@RequestMapping("/tags")
 public class TagController {
-    private static final String OK = "ok";
-    private static final String ERROR = "error";
+    @Autowired
+    private TagService tagService;
 
-    private final TagService tagService = new TagServiceImpl(new JdbcTagDao(JdbcConfig.getDataSource()));
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    @RequestMapping(value = "/tags", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String getAllTags() {
+    @GetMapping
+    public List<Tag> getAllTags() {
         try {
-            GsonResponse<List<Tag>> response = new GsonResponse<>();
-            response.setResult(OK);
-            response.setResponse(tagService.getAll());
-            return gson.toJson(response);
+            return tagService.getAll();
         } catch (Exception e) {
-            GsonResponse<String> response = new GsonResponse<>();
-            response.setResult(ERROR);
-            response.setResponse(e.getMessage());
-            return gson.toJson(response);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
         }
     }
 
-    @RequestMapping(value = "/tag", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String addTag(@RequestParam String name) {
-        Tag tag = new Tag();
-        tag.setName(name);
+    @GetMapping(value = "/{tagId}")
+    public Tag getTagById(@PathVariable("tagId") String id) {
         try {
-            tag.setId(tagService.add(tag));
-            GsonResponse<Tag> response = new GsonResponse<>();
-            response.setResult(OK);
-            response.setResponse(tag);
-            return gson.toJson(response);
-        } catch (IllegalArgumentException e) {
-            GsonResponse<String> response = new GsonResponse<>();
-            response.setResult(ERROR);
-            response.setResponse("Tag with name '" + name + "' already exists.");
-            return gson.toJson(response);
+            return tagService.getById(Long.parseLong(id)).get();
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal parameter 'tagId'. Must be positive integer.", e);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "There is no tag with id " + id, e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    e.getMessage(), e);
         }
     }
 
-    @RequestMapping(value = "/tag/{tagId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String getTagById(@PathVariable("tagId") long id) {
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long addTag(@RequestBody(required = false) Tag tag) {
+        if (tag == null || tag.getName() == null || tag.getName().isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Parameter 'name' is not specified.");
+        }
+        String name = tag.getName();
+        if (tagService.getByName(name).isPresent()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format("Tag with name '%s' already exists.", name));
+        }
         try {
-            Optional<Tag> optional = tagService.getById(id);
-            if (optional.isEmpty()) {
-                GsonResponse<String> response = new GsonResponse<>();
-                response.setResult(OK);
-                response.setResponse("No tag with id '" + id + "' is present.");
-                return gson.toJson(response);
-            }
-            GsonResponse<Tag> response = new GsonResponse<>();
-            response.setResult(OK);
-            response.setResponse(optional.get());
-            return gson.toJson(response);
+            return tagService.add(tag);
         } catch (Exception e) {
-            GsonResponse<String> response = new GsonResponse<>();
-            response.setResult(ERROR);
-            response.setResponse(e.getMessage());
-            return gson.toJson(response);
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    e.getMessage(), e);
         }
     }
 
-    @RequestMapping(value = "/tag/{tagId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String deleteTag(@PathVariable("tagId") long id) {
-        GsonResponse<String> response = new GsonResponse<>();
+    @DeleteMapping(value = "/{tagId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTag(@PathVariable("tagId") String id) {
         try {
-            Optional<Tag> optional = tagService.getById(id);
-            if (optional.isEmpty()) {
-                response.setResult(OK);
-                response.setResponse("No tag with id '" + id + "' is present.");
-
-            } else {
-                tagService.remove(optional.get());
-                response.setResult(OK);
-                response.setResponse("Tag with id '" + id + "' successfully deleted.");
-            }
+            tagService.remove(Long.parseLong(id));
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal parameter 'tagId'. Must be positive integer.", e);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "There is no tag with id " + id, e);
         } catch (Exception e) {
-            response.setResult(ERROR);
-            response.setResponse(e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    e.getMessage(), e);
         }
-        return gson.toJson(response);
     }
 }
