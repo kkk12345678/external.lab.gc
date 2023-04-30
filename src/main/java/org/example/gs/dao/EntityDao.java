@@ -1,14 +1,13 @@
 package org.example.gs.dao;
 
+import org.example.gs.model.Parameters;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface EntityDao<T> {
-    List<T> getAll(String parameters);
+    List<T> getAll(Parameters parameters);
     long insert(T t);
     void delete(long id);
-    void update(T t);
-    Optional<T> getById(long id);
-
-    Optional<T> getByName(String name);
+    T getById(long id);
+    T getByName(String name);
 }

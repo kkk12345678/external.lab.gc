@@ -1,14 +1,14 @@
 package org.example.gs.service;
 
-import org.example.gs.model.Tag;
+import org.example.gs.dto.TagRequestDto;
+import org.example.gs.dto.TagResponseDto;
+import org.example.gs.model.Parameters;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TagService {
-    List<Tag> getAll();
-    long add(Tag tag);
+    List<TagResponseDto> getAll(Parameters parameters);
+    long add(TagRequestDto tagRequestDto);
     void remove(long id);
-    Optional<Tag> getById(long id);
-    Optional<Tag> getByName(String name);
+    TagResponseDto getById(long id);
 }

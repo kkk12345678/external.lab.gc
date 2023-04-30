@@ -15,7 +15,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ComponentScan("org.example.gs")
 public class AppConfig implements WebMvcConfigurer {
-
     @Bean
     public JdbcTemplate jdbcTemplateObject() {
         return new JdbcTemplate(JdbcConfig.getDataSource());

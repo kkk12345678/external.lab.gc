@@ -1,18 +1,18 @@
 package org.example.gs.service;
 
-import org.example.gs.model.GiftCertificate;
+import org.example.gs.dto.GiftCertificateRequestDto;
+import org.example.gs.dto.GiftCertificateResponseDto;
+import org.example.gs.model.Parameters;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface GiftCertificateService {
-    long add(GiftCertificate giftCertificate);
-
+    GiftCertificateResponseDto getById(long id);
+    GiftCertificateResponseDto getByName(String name);
+    @Transactional
+    long add(GiftCertificateRequestDto giftCertificate);
     void remove(long id);
-
-    void update(GiftCertificate giftCertificate);
-
-    List<GiftCertificate> getAll(String parameters);
-    Optional<GiftCertificate> getById(long id);
-    Optional<GiftCertificate> getByName(String name);
+    void update(long l, GiftCertificateRequestDto giftCertificate);
+    List<GiftCertificateResponseDto> getAll(Parameters parameters);
 }

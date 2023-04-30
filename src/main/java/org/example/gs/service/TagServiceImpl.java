@@ -1,13 +1,16 @@
 package org.example.gs.service;
 
-import org.example.gs.dao.EntityDao;
 import org.example.gs.dao.TagDao;
+import org.example.gs.dto.TagRequestDto;
+import org.example.gs.dto.TagResponseDto;
+import org.example.gs.model.Parameters;
 import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -15,35 +18,43 @@ public class TagServiceImpl implements TagService {
     private TagDao tagDao;
 
     @Override
-    public List<Tag> getAll() {
-        return tagDao.getAll("");
+    public List<TagResponseDto> getAll(Parameters parameters) {
+        return tagDao.getAll(parameters)
+                .stream()
+                .map(TagResponseDto::fromEntityToDto)
+                .collect(Collectors.toList());
     }
 
-
     @Override
-    public long add(Tag tag) {
-        Optional<Tag> optional = tagDao.getByName(tag.getName());
-        if (optional.isEmpty()) {
-            return tagDao.insert(tag);
+    public long add(TagRequestDto tagRequestDto) {
+        if (tagRequestDto == null) {
+            throw new IllegalArgumentException("Tag parameters are not specified.");
+        }
+        String tagName = tagRequestDto.getName();
+        if (tagName == null || tagName.isEmpty()) {
+            throw new IllegalArgumentException("Tag parameter 'name' is not specified.");
+        }
+        if (tagDao.getByName(tagName) == null) {
+            return tagDao.insert(TagRequestDto.fromDtoToEntity(tagRequestDto));
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(String.format("Tag with name'%s' already exists.", tagName));
         }
     }
 
     @Override
     public void remove(long id) {
+        if (tagDao.getById(id) == null) {
+            throw new NoSuchElementException();
+        }
         tagDao.delete(id);
     }
 
     @Override
-    public Optional<Tag> getById(long id) {
-        return tagDao.getById(id);
+    public TagResponseDto getById(long id) {
+        Tag tag = tagDao.getById(id);
+        if (tag == null) {
+            throw new NoSuchElementException();
+        }
+        return TagResponseDto.fromEntityToDto(tag);
     }
-
-    @Override
-    public Optional<Tag> getByName(String name) {
-        return tagDao.getByName(name);
-    }
-
-
 }

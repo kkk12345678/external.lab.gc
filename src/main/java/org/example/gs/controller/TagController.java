@@ -1,13 +1,13 @@
 package org.example.gs.controller;
 
-import org.example.gs.model.Tag;
+import org.example.gs.dto.TagRequestDto;
+import org.example.gs.model.Parameters;
 import org.example.gs.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -17,73 +17,53 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public List<Tag> getAllTags() {
+    public Object getAllTags() {
         try {
-            return tagService.getAll();
+            return new ResponseEntity<>(tagService.getAll(new Parameters()), HttpStatus.OK);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
     @GetMapping(value = "/{tagId}")
-    public Tag getTagById(@PathVariable("tagId") String id) {
+    public Object getTagById(@PathVariable("tagId") String id) {
         try {
-            return tagService.getById(Long.parseLong(id)).get();
+            return new ResponseEntity<>(tagService.getById(Long.parseLong(id)), HttpStatus.OK);
         } catch (NumberFormatException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal parameter 'tagId'. Must be positive integer.", e);
+            return new ResponseEntity<>(
+                    String.format("Illegal parameter tagId = '%s'. Must be positive integer.", id),
+                    HttpStatus.BAD_REQUEST);
         } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "There is no tag with id " + id, e);
+            return new ResponseEntity<>(
+                    "There is no tag with id " + id,
+                    HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Long addTag(@RequestBody(required = false) Tag tag) {
-        if (tag == null || tag.getName() == null || tag.getName().isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Parameter 'name' is not specified.");
-        }
-        String name = tag.getName();
-        if (tagService.getByName(name).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    String.format("Tag with name '%s' already exists.", name));
-        }
+    public Object addTag(@RequestBody(required = false) TagRequestDto tagRequestDto) {
         try {
-            return tagService.add(tag);
+            return new ResponseEntity<>(tagService.add(tagRequestDto), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
     @DeleteMapping(value = "/{tagId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable("tagId") String id) {
+    public Object deleteTag(@PathVariable("tagId") String id) {
         try {
             tagService.remove(Long.parseLong(id));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NumberFormatException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal parameter 'tagId'. Must be positive integer.", e);
+            return new ResponseEntity<>("Illegal parameter 'tagId'. Must be positive integer.", HttpStatus.BAD_REQUEST);
         } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "There is no tag with id " + id, e);
+            return new ResponseEntity<>("There is no tag with id " + id, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 }

@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 public class JdbcConfig {
     private static DataSource dataSource;
+    private JdbcConfig() {}
 
     public static synchronized DataSource getDataSource() {
         if (dataSource == null) {

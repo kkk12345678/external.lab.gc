@@ -1,7 +1,7 @@
 package org.example.gs.dao;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.gs.model.Parameters;
 import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,13 +28,12 @@ public class JdbcTagDao implements TagDao {
 
     @Autowired
     private Logger logger;
-
     @Autowired
     private JdbcTemplate jdbcTemplateObject;
 
     @Override
-    public List<Tag> getAll(String parameters) {
-        List<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters, new TagMapper());
+    public List<Tag> getAll(Parameters parameters) {
+        List<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters.getClause(), new TagMapper());
         logger.info(tags.size() + " tags found");
         return tags;
     }
@@ -48,42 +47,36 @@ public class JdbcTagDao implements TagDao {
             return ps;
         }, keyHolder);
         long generatedId = keyHolder.getKey().longValue();
-        logger.info("Generated id : " + generatedId);
+        logger.info(String.format("Tag successfully inserted. Generated id : %s.", generatedId));
         return generatedId;
     }
 
     @Override
     public void delete(long id) {
         jdbcTemplateObject.update(SQL_DELETE , id);
-        logger.info("Tag with id : " + id + " deleted");
+        logger.info(String.format("Tag with id : %d successfully deleted.", id));
     }
 
     @Override
-    public void update(Tag tag) {
-        jdbcTemplateObject.update(SQL_UPDATE, tag.getName(), tag.getId());
-        logger.info(tag + " updated");
-    }
-
-    @Override
-    public Optional<Tag> getById(long id) {
+    public Tag getById(long id) {
         List<Tag> list = jdbcTemplateObject.query(SQL_SELECT_BY_ID, new TagMapper(), id);
         if (list.isEmpty()) {
             logger.info("No tag found with id : " + id);
-            return Optional.empty();
+            return null;
         }
         logger.info(list.get(0) + " found");
-        return Optional.of(list.get(0));
+        return list.get(0);
     }
 
     @Override
-    public Optional<Tag> getByName(String name) {
+    public Tag getByName(String name) {
         List<Tag> list = jdbcTemplateObject.query(SQL_SELECT_BY_NAME, new TagMapper(), name);
         if (list.isEmpty()) {
             logger.info("No tag found with name : '" + name + "'");
-            return Optional.empty();
+            return null;
         }
         logger.info(list.get(0) + " found");
-        return Optional.of(list.get(0));
+        return list.get(0);
     }
 
     private static class TagMapper implements RowMapper<Tag> {
