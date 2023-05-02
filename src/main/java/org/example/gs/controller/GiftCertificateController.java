@@ -1,7 +1,7 @@
 package org.example.gs.controller;
 
 import org.example.gs.dto.GiftCertificateRequestDto;
-import org.example.gs.model.Parameters;
+import org.example.gs.model.GiftCertificateParameters;
 import org.example.gs.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ public class GiftCertificateController {
     private GiftCertificateService giftCertificateService;
 
     @GetMapping
-    public Object getAllGiftCertificates(Parameters parameters) {
+    public Object getAllGiftCertificates(GiftCertificateParameters giftCertificateParameters) {
         try {
-            return new ResponseEntity<>(giftCertificateService.getAll(parameters), HttpStatus.OK);
+            return new ResponseEntity<>(giftCertificateService.getAll(giftCertificateParameters), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {

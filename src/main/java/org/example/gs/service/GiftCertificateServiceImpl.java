@@ -11,9 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,14 +21,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private GiftCertificateDao giftCertificateDao;
     @Autowired
     private TagDao tagDao;
-    /*
-    @Autowired
-    private Logger logger;
-     */
 
     @Override
-    public List<GiftCertificateResponseDto> getAll(Parameters parameters) {
-        return giftCertificateDao.getAll(parameters)
+    public Collection<GiftCertificateResponseDto> getAll(Parameters giftCertificateParameters) {
+        return giftCertificateDao.getAll(giftCertificateParameters)
                 .stream()
                 .map(GiftCertificateResponseDto::fromEntityToDto)
                 .collect(Collectors.toList());
@@ -71,7 +66,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void update(long id, GiftCertificateRequestDto giftCertificateRequestDto) {
-        //logger.info("Processing " + giftCertificateRequestDto);
         giftCertificateDao.update(checkGiftCertificateRequestDtoForUpdate(id, giftCertificateRequestDto));
         if (giftCertificateRequestDto.getTags() != null) {
             giftCertificateDao.deleteTags(id);

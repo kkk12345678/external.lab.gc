@@ -3,6 +3,7 @@ package org.example.gs.dao;
 import org.apache.logging.log4j.Logger;
 import org.example.gs.model.GiftCertificate;
 
+import org.example.gs.model.GiftCertificateParameters;
 import org.example.gs.model.Parameters;
 import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class JdbcGiftCertificateDao implements GiftCertificateDao {
@@ -35,21 +37,24 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
             where gift_certificate_id = ?
             """;
     private static final String SQL_SELECT_ALL = """
-            select gift_certificates.*, tags.* from gift_certificates
-            left join gift_certificate_tags on gift_certificate_tags.gift_certificate_id = gift_certificates.gift_certificate_id
-            left join tags on tags.tag_id = gift_certificate_tags.tag_id
+            select * from
+                (select gs.*, t.*, dense_rank() over (%s) count
+            	from gift_certificates as gs
+                left join gift_certificate_tags as gst on gst.gift_certificate_id = gs.gift_certificate_id
+            	left join tags as t on t.tag_id = gst.tag_id %s) result
+            	%s
             """;
     private static final String SQL_SELECT_BY_ID = """
-            select gift_certificates.*, tags.* from gift_certificates
-            left join gift_certificate_tags on gift_certificate_tags.gift_certificate_id = gift_certificates.gift_certificate_id
-            left join tags on tags.tag_id = gift_certificate_tags.tag_id
-            where gift_certificates.gift_certificate_id = ?
+            select gs.*, t.* from gift_certificates as gs
+            left join gift_certificate_tags  as gst on gst.gift_certificate_id = gs.gift_certificate_id
+            left join tags as t on t.tag_id = gst.tag_id
+            where gs.gift_certificate_id = ?
             """;
     private static final String SQL_SELECT_BY_NAME = """
-            select gift_certificates.*, tags.* from gift_certificates
-            left join gift_certificate_tags on gift_certificate_tags.gift_certificate_id = gift_certificates.gift_certificate_id
-            left join tags on tags.tag_id = gift_certificate_tags.tag_id
-            where gift_certificates.gift_certificate_name = ?
+            select gs.*, t.* from gift_certificates as gs
+            left join gift_certificate_tags  as gst on gst.gift_certificate_id = gs.gift_certificate_id
+            left join tags as t on t.tag_id = gst.tag_id
+            where gs.gift_certificate_name = ?
             """;
     private static final String SQL_INSERT_GIFT_CERTIFICATE_TAG =
             "insert into gift_certificate_tags (gift_certificate_id, tag_id) values (?, ?)";
@@ -62,16 +67,17 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
     private Logger logger;
 
     @Override
-    public List<GiftCertificate> getAll(Parameters parameters) {
-        List<GiftCertificate> list = jdbcTemplateObject.query(
-                SQL_SELECT_ALL + parameters.clause(),
+    public Collection<GiftCertificate> getAll(Parameters parameters) {
+        Collection<GiftCertificate> giftCertificates = jdbcTemplateObject.query(
+                String.format(SQL_SELECT_ALL,
+                        parameters.orderClause(), parameters.whereClause(), parameters.limitClause()),
                 new GiftCertificateResultSetExtractor());
-        if (list == null || list.isEmpty()) {
+        if (giftCertificates == null || giftCertificates.isEmpty()) {
             logger.info("No gift certificates found.");
         } else {
-            logger.info("Found " + list.size() + " gift certificates.");
+            logger.info("Found " + giftCertificates.size() + " gift certificates.");
         }
-        return list;
+        return giftCertificates;
     }
 
     @Override

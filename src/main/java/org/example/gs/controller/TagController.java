@@ -1,7 +1,7 @@
 package org.example.gs.controller;
 
 import org.example.gs.dto.TagRequestDto;
-import org.example.gs.model.Parameters;
+import org.example.gs.model.TagParameters;
 import org.example.gs.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class TagController {
     @GetMapping
     public Object getAllTags() {
         try {
-            return new ResponseEntity<>(tagService.getAll(new Parameters()), HttpStatus.OK);
+            return new ResponseEntity<>(tagService.getAll(new TagParameters()), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }

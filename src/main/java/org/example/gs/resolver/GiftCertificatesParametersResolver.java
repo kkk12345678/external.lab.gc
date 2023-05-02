@@ -1,6 +1,6 @@
 package org.example.gs.resolver;
 
-import org.example.gs.model.Parameters;
+import org.example.gs.model.GiftCertificateParameters;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,7 +15,7 @@ public class GiftCertificatesParametersResolver
         implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getNestedParameterType().equals(Parameters.class);
+        return parameter.getNestedParameterType().equals(GiftCertificateParameters.class);
     }
 
     @Override
@@ -23,19 +23,19 @@ public class GiftCertificatesParametersResolver
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        Parameters parameters = new Parameters();
+        GiftCertificateParameters giftCertificateParameters = new GiftCertificateParameters();
         String limit = webRequest.getParameter("limit");
         String page = webRequest.getParameter("page");
         String[] sort = webRequest.getParameterValues("sort");
         String[] search = webRequest.getParameterValues("search");
-        setPagination(parameters, limit, page);
-        setSort(parameters, sort);
-        setSearch(parameters, search);
-        parameters.setTagName(webRequest.getParameter("tagName"));
-        return parameters;
+        setPagination(giftCertificateParameters, limit, page);
+        setSort(giftCertificateParameters, sort);
+        setSearch(giftCertificateParameters, search);
+        giftCertificateParameters.setTagName(webRequest.getParameter("tagName"));
+        return giftCertificateParameters;
     }
 
-    private static void setSort(Parameters parameters, String[] sort) {
+    private static void setSort(GiftCertificateParameters giftCertificateParameters, String[] sort) {
         if (sort != null) {
             if (sort.length > 2) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -57,13 +57,13 @@ public class GiftCertificatesParametersResolver
                         "'sort' parameter contains contradictory sort order.");
             }
         }
-        parameters.setSort(sort);
+        giftCertificateParameters.setSort(sort);
     }
 
-    private static void setPagination(Parameters parameters, String limit, String page) {
+    private static void setPagination(GiftCertificateParameters giftCertificateParameters, String limit, String page) {
         if (limit == null) {
-            parameters.setLimit(null);
-            parameters.setPage(null);
+            giftCertificateParameters.setLimit(null);
+            giftCertificateParameters.setPage(null);
         } else {
             try {
                 int l = Integer.parseInt(limit);
@@ -71,13 +71,13 @@ public class GiftCertificatesParametersResolver
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                             "'limit' parameter must be positive.");
                 }
-                parameters.setLimit(l);
+                giftCertificateParameters.setLimit(l);
             } catch (NumberFormatException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "'limit' parameter must be integer.");
             }
             if (page == null) {
-                parameters.setPage(null);
+                giftCertificateParameters.setPage(null);
             } else {
                 try {
                     int p = Integer.parseInt(page);
@@ -85,7 +85,7 @@ public class GiftCertificatesParametersResolver
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                 "'page' parameter must be positive.");
                     }
-                    parameters.setPage(p);
+                    giftCertificateParameters.setPage(p);
                 } catch (NumberFormatException e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                             "'page' parameter must be integer.");
@@ -94,7 +94,7 @@ public class GiftCertificatesParametersResolver
         }
     }
 
-    private static void setSearch(Parameters parameters, String[] search) {
+    private static void setSearch(GiftCertificateParameters giftCertificateParameters, String[] search) {
         if (search != null) {
             if (search.length > 2) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -109,6 +109,6 @@ public class GiftCertificatesParametersResolver
                 }
             });
         }
-        parameters.setSearch(search);
+        giftCertificateParameters.setSearch(search);
     }
 }

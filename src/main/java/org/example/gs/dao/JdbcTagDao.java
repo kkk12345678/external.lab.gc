@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -31,8 +32,8 @@ public class JdbcTagDao implements TagDao {
     private JdbcTemplate jdbcTemplateObject;
 
     @Override
-    public List<Tag> getAll(Parameters parameters) {
-        List<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters.clause(), new TagMapper());
+    public Collection<Tag> getAll(Parameters parameters) {
+        Collection<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters.whereClause(), new TagMapper());
         logger.info(tags.size() + " tags found");
         return tags;
     }

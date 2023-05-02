@@ -3,12 +3,13 @@ package org.example.gs.service;
 import org.example.gs.dao.TagDao;
 import org.example.gs.dto.TagRequestDto;
 import org.example.gs.dto.TagResponseDto;
+import org.example.gs.model.GiftCertificateParameters;
 import org.example.gs.model.Parameters;
 import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,8 @@ public class TagServiceImpl implements TagService {
     private TagDao tagDao;
 
     @Override
-    public List<TagResponseDto> getAll(Parameters parameters) {
-        return tagDao.getAll(parameters)
+    public Collection<TagResponseDto> getAll(Parameters tagParameters) {
+        return tagDao.getAll(tagParameters)
                 .stream()
                 .map(TagResponseDto::fromEntityToDto)
                 .collect(Collectors.toList());

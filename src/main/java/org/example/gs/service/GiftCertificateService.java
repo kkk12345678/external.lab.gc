@@ -5,7 +5,7 @@ import org.example.gs.dto.GiftCertificateResponseDto;
 import org.example.gs.model.Parameters;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface GiftCertificateService {
     GiftCertificateResponseDto getById(long id);
@@ -14,5 +14,5 @@ public interface GiftCertificateService {
     long add(GiftCertificateRequestDto giftCertificate);
     void remove(long id);
     void update(long l, GiftCertificateRequestDto giftCertificate);
-    List<GiftCertificateResponseDto> getAll(Parameters parameters);
+    Collection<GiftCertificateResponseDto> getAll(Parameters parameters);
 }

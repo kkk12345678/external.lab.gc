@@ -2,10 +2,10 @@ package org.example.gs.dao;
 
 import org.example.gs.model.Parameters;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface EntityDao<T> {
-    List<T> getAll(Parameters parameters);
+    Collection<T> getAll(Parameters parameters);
     long insert(T t);
     void delete(long id);
     T getById(long id);
