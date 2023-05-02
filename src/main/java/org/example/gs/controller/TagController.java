@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 
@@ -21,7 +22,7 @@ public class TagController {
         try {
             return new ResponseEntity<>(tagService.getAll(new Parameters()), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }
     }
 
@@ -30,15 +31,12 @@ public class TagController {
         try {
             return new ResponseEntity<>(tagService.getById(Long.parseLong(id)), HttpStatus.OK);
         } catch (NumberFormatException e) {
-            return new ResponseEntity<>(
-                    String.format("Illegal parameter tagId = '%s'. Must be positive integer.", id),
-                    HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    String.format("Illegal parameter 'tagId' = '%s'. Must be positive integer.", id));
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(
-                    "There is no tag with id " + id,
-                    HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no tag with id " + id);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }
     }
 
@@ -47,9 +45,9 @@ public class TagController {
         try {
             return new ResponseEntity<>(tagService.add(tagRequestDto), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }
     }
 
@@ -59,11 +57,12 @@ public class TagController {
             tagService.remove(Long.parseLong(id));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NumberFormatException e) {
-            return new ResponseEntity<>("Illegal parameter 'tagId'. Must be positive integer.", HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Illegal parameter 'tagId'. Must be positive integer.");
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>("There is no tag with id " + id, HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no tag with id " + id);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }
     }
 }

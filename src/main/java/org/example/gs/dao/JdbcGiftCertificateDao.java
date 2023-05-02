@@ -4,9 +4,11 @@ import org.apache.logging.log4j.Logger;
 import org.example.gs.model.GiftCertificate;
 
 import org.example.gs.model.Parameters;
+import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -61,12 +63,15 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> getAll(Parameters parameters) {
-        logger.info(parameters);
-        logger.info(parameters.getClause());
-        Map<Long, GiftCertificate> map = new HashMap<>();
-        jdbcTemplateObject.query(SQL_SELECT_ALL + parameters.getClause(), new GiftCertificateRowCallbackHandler(map));
-        logger.info("Found " + map.keySet().size() + " certificates");
-        return map.values().stream().toList();
+        List<GiftCertificate> list = jdbcTemplateObject.query(
+                SQL_SELECT_ALL + parameters.clause(),
+                new GiftCertificateResultSetExtractor());
+        if (list == null || list.isEmpty()) {
+            logger.info("No gift certificates found.");
+        } else {
+            logger.info("Found " + list.size() + " gift certificates.");
+        }
+        return list;
     }
 
     @Override
@@ -120,10 +125,8 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
 
     @Override
     public GiftCertificate getById(long id) {
-        Map<Long, GiftCertificate> map = new HashMap<>();
-        jdbcTemplateObject.query(SQL_SELECT_BY_ID, new GiftCertificateRowCallbackHandler(map), id);
-        List<GiftCertificate> list = map.values().stream().toList();
-        if (list.isEmpty()) {
+        List<GiftCertificate> list = jdbcTemplateObject.query(SQL_SELECT_BY_ID, new GiftCertificateResultSetExtractor(), id);
+        if (list == null || list.isEmpty()) {
             logger.info("No gift certificate found with id " + id);
             return null;
         }
@@ -133,10 +136,10 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
 
     @Override
     public GiftCertificate getByName(String name) {
-        Map<Long, GiftCertificate> map = new HashMap<>();
-        jdbcTemplateObject.query(SQL_SELECT_BY_NAME, new GiftCertificateRowCallbackHandler(map), name);
-        List<GiftCertificate> list = map.values().stream().toList();
-        if (list.isEmpty()) {
+        List<GiftCertificate> list = jdbcTemplateObject.query(
+                SQL_SELECT_BY_NAME,
+                new GiftCertificateResultSetExtractor(), name);
+        if (list == null || list.isEmpty()) {
             logger.info("No gift certificate found with name " + name);
             return null;
         }
@@ -149,32 +152,37 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
         jdbcTemplateObject.update(SQL_INSERT_GIFT_CERTIFICATE_TAG, giftCertificateId, tagId);
     }
 
-    private record GiftCertificateRowCallbackHandler(Map<Long, GiftCertificate> map) implements RowCallbackHandler {
+    private static class GiftCertificateResultSetExtractor implements ResultSetExtractor<List<GiftCertificate>> {
         @Override
-        public void processRow(ResultSet rs) throws SQLException {
-            long id = rs.getLong("gift_certificate_id");
-            if (!map.containsKey(id)) {
-                GiftCertificate giftCertificate = new GiftCertificate();
-                giftCertificate.setId(id);
-                giftCertificate.setName(rs.getString("gift_certificate_name"));
-                giftCertificate.setDescription(rs.getString("description"));
-                giftCertificate.setPrice(rs.getDouble("price"));
-                giftCertificate.setDuration(rs.getInt("duration"));
-                giftCertificate.setCreateDate(rs.getString("create_date"));
-                giftCertificate.setLastUpdateDate(rs.getString("last_update_date"));
-                giftCertificate.setTags(new ArrayList<>());
-                if (rs.getLong("tag_id") != 0L) {
-                    giftCertificate.addTag(rs.getLong("tag_id"), rs.getString("tag_name"));
+        public List<GiftCertificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            Set<Long> ids = new HashSet<>();
+            List<GiftCertificate> list = new ArrayList<>();
+            while (rs.next()) {
+                long id = rs.getLong("gift_certificate_id");
+                if (!ids.contains(id)) {
+                    GiftCertificate giftCertificate = new GiftCertificate();
+                    giftCertificate.setId(id);
+                    giftCertificate.setName(rs.getString("gift_certificate_name"));
+                    giftCertificate.setDescription(rs.getString("description"));
+                    giftCertificate.setPrice(rs.getDouble("price"));
+                    giftCertificate.setDuration(rs.getInt("duration"));
+                    giftCertificate.setCreateDate(rs.getString("create_date"));
+                    giftCertificate.setLastUpdateDate(rs.getString("last_update_date"));
+                    giftCertificate.setTags(new ArrayList<>());
+                    list.add(giftCertificate);
+                    ids.add(id);
                 }
-                map.put(id, giftCertificate);
-            } else {
-                if (rs.getLong("tag_id") != 0L) {
-                    map.get(id).addTag(rs.getLong("tag_id"), rs.getString("tag_name"));
+                long tagId = rs.getLong("tag_id");
+                if (tagId != 0) {
+                    Tag tag = new Tag();
+                    tag.setId(tagId);
+                    tag.setName(rs.getString("tag_name"));
+                    list.get(list.size() - 1).addTag(tag);
                 }
             }
+            return list;
         }
     }
-
     private static String getDate() {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
