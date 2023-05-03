@@ -17,13 +17,20 @@ import java.util.stream.Collectors;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+    private static final String ERROR_PARAMS_NOT_SPECIFIED = "Gift certificate parameters are not specified.";
+    private static final String ERROR_NAME_NOT_SPECIFIED = "Gift certificate parameter 'name' is not specified.";
+    private static final String ERROR_DURATION_NOT_VALID = "Parameter 'duration' must be positive integer.";
+    private static final String ERROR_PRICE_NOT_VALID = "Parameter 'price' must be positive double.";
+    private static final String ERROR_NAME_ALREADY_EXISTS = "Gift certificate with name '%s' already exists.";
+    private static final String ERROR_ID_NOT_FOUND = "There is no gift certificate with 'id' = '%d'.";
     @Autowired
     private GiftCertificateDao giftCertificateDao;
     @Autowired
     private TagDao tagDao;
 
     @Override
-    public Collection<GiftCertificateResponseDto> getAll(Parameters giftCertificateParameters) {
+    public Collection<GiftCertificateResponseDto> getAll(
+            Parameters giftCertificateParameters) {
         return giftCertificateDao.getAll(giftCertificateParameters)
                 .stream()
                 .map(GiftCertificateResponseDto::fromEntityToDto)
@@ -34,7 +41,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateResponseDto getById(long id) {
         GiftCertificate giftCertificate = giftCertificateDao.getById(id);
         if (giftCertificate == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException(
+                    String.format(ERROR_ID_NOT_FOUND, id));
         }
         return GiftCertificateResponseDto.fromEntityToDto(giftCertificate);
     }
@@ -59,7 +67,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (giftCertificateDao.getById(id) != null) {
             giftCertificateDao.delete(id);
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException(String.format(ERROR_ID_NOT_FOUND, id));
         }
     }
 
@@ -88,32 +96,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private void checkGiftCertificateRequestDtoForInsert(GiftCertificateRequestDto giftCertificateRequestDto) {
         if (giftCertificateRequestDto == null) {
-            throw new IllegalArgumentException("No data specified to insert.");
+            throw new IllegalArgumentException(ERROR_PARAMS_NOT_SPECIFIED);
         }
         String name = giftCertificateRequestDto.getName();
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Parameter 'name' is not specified.");
+            throw new IllegalArgumentException(ERROR_NAME_NOT_SPECIFIED);
         }
         if (giftCertificateRequestDto.getDuration() <= 0) {
-            throw new IllegalArgumentException("Parameter 'duration' must be positive integer.");
+            throw new IllegalArgumentException(ERROR_DURATION_NOT_VALID);
         }
         if (giftCertificateRequestDto.getPrice() <= 0.0) {
-            throw new IllegalArgumentException("Parameter 'price' must be positive double.");
+            throw new IllegalArgumentException(ERROR_PRICE_NOT_VALID);
         }
         if (giftCertificateDao.getByName(name) != null) {
             throw new IllegalArgumentException(
-                    String.format("Gift certificate with name '%s' already exists.", name));
+                    String.format(ERROR_NAME_ALREADY_EXISTS, name));
         }
     }
 
     private GiftCertificate checkGiftCertificateRequestDtoForUpdate(
             long id, GiftCertificateRequestDto giftCertificateRequestDto) {
         if (giftCertificateRequestDto == null) {
-            throw new IllegalArgumentException("No data specified to update.");
+            throw new IllegalArgumentException(ERROR_PARAMS_NOT_SPECIFIED);
         }
         GiftCertificate giftCertificateToUpdate = giftCertificateDao.getById(id);
         if (giftCertificateToUpdate == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException(String.format(ERROR_ID_NOT_FOUND, id));
         }
         String name = giftCertificateRequestDto.getName();
         if (name != null && !name.isBlank()) {
@@ -121,14 +129,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             if (giftCertificateToCheck != null &&
                     giftCertificateToCheck.getId() != giftCertificateToUpdate.getId()) {
                 throw new IllegalArgumentException(
-                        String.format("Gift certificate with name '%s' already exists.", name));
+                        String.format(ERROR_NAME_ALREADY_EXISTS, name));
             }
             giftCertificateToUpdate.setName(name);
         }
         Double price = giftCertificateRequestDto.getPrice();
         if (price != null) {
             if (price <= 0.0) {
-                throw new IllegalArgumentException("Parameter 'price' must be positive double.");
+                throw new IllegalArgumentException(ERROR_PRICE_NOT_VALID);
             } else {
                 giftCertificateToUpdate.setPrice(price);
             }
@@ -136,7 +144,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         Integer duration = giftCertificateRequestDto.getDuration();
         if (duration != null) {
             if (duration <= 0) {
-                throw new IllegalArgumentException("Parameter 'duration' must be positive integer.");
+                throw new IllegalArgumentException(ERROR_DURATION_NOT_VALID);
             } else {
                 giftCertificateToUpdate.setDuration(duration);
             }

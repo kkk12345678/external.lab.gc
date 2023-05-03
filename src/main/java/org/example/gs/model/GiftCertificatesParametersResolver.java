@@ -1,6 +1,5 @@
-package org.example.gs.resolver;
+package org.example.gs.model;
 
-import org.example.gs.model.GiftCertificateParameters;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.support.WebDataBinderFactory;

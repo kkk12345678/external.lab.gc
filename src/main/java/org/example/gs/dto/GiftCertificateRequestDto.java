@@ -3,7 +3,7 @@ package org.example.gs.dto;
 import lombok.Data;
 import org.example.gs.model.GiftCertificate;
 
-import java.util.List;
+import java.util.Collection;
 
 @Data
 public class GiftCertificateRequestDto {
@@ -11,7 +11,7 @@ public class GiftCertificateRequestDto {
     private String description;
     private Double price;
     private Integer duration;
-    private List<TagRequestDto> tags;
+    private Collection<TagRequestDto> tags;
 
     public static GiftCertificate fromDtoToEntity(GiftCertificateRequestDto giftCertificateRequestDto) {
         GiftCertificate giftCertificate = new GiftCertificate();

@@ -4,7 +4,7 @@ import lombok.Data;
 import org.example.gs.model.GiftCertificate;
 import org.example.gs.model.Tag;
 
-import java.util.List;
+import java.util.Collection;
 
 @Data
 public class GiftCertificateResponseDto {
@@ -15,7 +15,7 @@ public class GiftCertificateResponseDto {
     private int duration;
     private String createDate;
     private String lastUpdateDate;
-    private List<Tag> tags;
+    private Collection<Tag> tags;
 
     public static GiftCertificateResponseDto fromEntityToDto(GiftCertificate giftCertificate) {
         GiftCertificateResponseDto giftCertificateResponseDto = new GiftCertificateResponseDto();

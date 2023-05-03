@@ -5,7 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.example.gs.resolver.GiftCertificatesParametersResolver;
+import org.example.gs.model.GiftCertificatesParametersResolver;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

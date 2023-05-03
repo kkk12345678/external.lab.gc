@@ -3,7 +3,8 @@ package org.example.gs.model;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Collection;
+
 
 @Data
 @Component
@@ -15,7 +16,7 @@ public class GiftCertificate {
     private int duration;
     private String createDate;
     private String lastUpdateDate;
-    private List<Tag> tags;
+    private Collection<Tag> tags;
 
     public void addTag(Tag tag) {
         tags.add(tag);

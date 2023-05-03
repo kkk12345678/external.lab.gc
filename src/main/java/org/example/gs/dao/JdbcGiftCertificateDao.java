@@ -3,7 +3,6 @@ package org.example.gs.dao;
 import org.apache.logging.log4j.Logger;
 import org.example.gs.model.GiftCertificate;
 
-import org.example.gs.model.GiftCertificateParameters;
 import org.example.gs.model.Parameters;
 import org.example.gs.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class JdbcGiftCertificateDao implements GiftCertificateDao {

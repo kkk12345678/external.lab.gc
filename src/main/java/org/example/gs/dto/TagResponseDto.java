@@ -5,8 +5,8 @@ import org.example.gs.model.Tag;
 
 @Data
 public class TagResponseDto {
-    long id;
-    String name;
+    private long id;
+    private String name;
 
     public static TagResponseDto fromEntityToDto(Tag tag) {
         if (tag == null) {
