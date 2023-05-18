@@ -2,6 +2,7 @@ package org.example.gc.controller;
 
 import org.example.gc.dto.GiftCertificateRequestInsertDto;
 import org.example.gc.dto.GiftCertificateRequestUpdateDto;
+import org.example.gc.dao.GiftCertificateParametersHandler;
 import org.example.gc.model.GiftCertificateParameters;
 import org.example.gc.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,7 @@ public class GiftCertificateController {
     private GiftCertificateService giftCertificateService;
 
     @GetMapping
-    public ResponseEntity<Object> getAllGiftCertificates(
-            GiftCertificateParameters giftCertificateParameters) {
+    public ResponseEntity<Object> getAllGiftCertificates(GiftCertificateParameters giftCertificateParameters) {
         return new ResponseEntity<>(
                 giftCertificateService.getAll(giftCertificateParameters), HttpStatus.OK);
     }

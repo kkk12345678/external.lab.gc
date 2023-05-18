@@ -1,8 +1,6 @@
 package org.example.gc.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.gc.model.GiftCertificate;
@@ -18,17 +16,18 @@ public class GiftCertificateRequestInsertDto {
     @Positive(message = "Gift certificate parameter 'duration' must be positive integer.")
     @NotNull(message = "Gift certificate parameter 'duration' must not be empty.")
     private Integer duration;
-    @NotEmpty(message = "Gift certificate parameter 'name' must not be empty.")
+    @NotBlank(message = "Gift certificate parameter 'name' must not be empty.")
+    @Size(max = 256, message = "Gift certificate parameter 'name' must not contain more than 256 characters.")
     private String name;
     private Collection<TagRequestDto> tags;
     private String description;
 
-    public static GiftCertificate fromDtoToEntity(GiftCertificateRequestInsertDto giftCertificateRequestInsertDto) {
+    public GiftCertificate toEntity() {
         GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setName(giftCertificateRequestInsertDto.getName());
-        giftCertificate.setDescription(giftCertificateRequestInsertDto.getDescription());
-        giftCertificate.setPrice(giftCertificateRequestInsertDto.getPrice());
-        giftCertificate.setDuration(giftCertificateRequestInsertDto.getDuration());
+        giftCertificate.setName(name);
+        giftCertificate.setDescription(description);
+        giftCertificate.setPrice(price);
+        giftCertificate.setDuration(duration);
         return giftCertificate;
     }
 }

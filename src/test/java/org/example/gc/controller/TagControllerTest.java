@@ -7,7 +7,7 @@ import org.example.gc.config.AppConfig;
 import org.example.gc.dao.TagDao;
 import org.example.gc.dto.TagRequestDto;
 import org.example.gc.model.Tag;
-import org.example.gc.model.TagParameters;
+import org.example.gc.dao.TagParametersHandler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +46,12 @@ public class TagControllerTest {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(tagDao.getAll(new TagParameters()))));
+                .andExpect(content().string(new Gson().toJson(tagDao.getAll(new TagParametersHandler(null)))));
     }
 
     @Test
     void testGetById_whenIdExists() {
-        tagDao.getAll(new TagParameters()).stream().limit(10).forEach(tag -> {
+        tagDao.getAll(null).stream().limit(10).forEach(tag -> {
             try {
                 mockMvc.perform(get(URL + "/" + tag.getId()))
                         .andExpect(status().isOk())

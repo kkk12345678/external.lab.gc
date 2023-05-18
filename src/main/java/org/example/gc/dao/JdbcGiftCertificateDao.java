@@ -3,7 +3,6 @@ package org.example.gc.dao;
 import org.apache.logging.log4j.Logger;
 import org.example.gc.model.GiftCertificate;
 
-import org.example.gc.model.Parameters;
 import org.example.gc.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -68,10 +67,10 @@ public class JdbcGiftCertificateDao implements GiftCertificateDao {
     private Logger logger;
 
     @Override
-    public Collection<GiftCertificate> getAll(Parameters parameters) {
+    public Collection<GiftCertificate> getAll(ParametersHandler parametersHandler) {
         Collection<GiftCertificate> giftCertificates = jdbcTemplateObject.query(
                 String.format(SQL_SELECT_ALL,
-                        parameters.orderClause(), parameters.whereClause(), parameters.limitClause()),
+                        parametersHandler.orderClause(), parametersHandler.whereClause(), parametersHandler.limitClause()),
                 new GiftCertificateResultSetExtractor());
         if (giftCertificates == null || giftCertificates.isEmpty()) {
             logger.info("No gift certificates found.");

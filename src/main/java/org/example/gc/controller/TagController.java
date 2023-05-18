@@ -1,7 +1,7 @@
 package org.example.gc.controller;
 
 import org.example.gc.dto.TagRequestDto;
-import org.example.gc.model.TagParameters;
+import org.example.gc.dao.TagParametersHandler;
 import org.example.gc.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class TagController {
 
     @GetMapping
     public ResponseEntity<Object> getAllTags() {
-        return new ResponseEntity<>(tagService.getAll(new TagParameters()), HttpStatus.OK);
+        return new ResponseEntity<>(tagService.getAll(null), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{tagId}")

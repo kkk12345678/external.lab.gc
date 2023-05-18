@@ -9,9 +9,10 @@ import org.example.gc.dao.TagDao;
 import org.example.gc.dto.GiftCertificateRequestInsertDto;
 import org.example.gc.dto.TagRequestDto;
 import org.example.gc.model.GiftCertificate;
+import org.example.gc.dao.GiftCertificateParametersHandler;
 import org.example.gc.model.GiftCertificateParameters;
 import org.example.gc.model.Tag;
-import org.example.gc.model.TagParameters;
+import org.example.gc.dao.TagParametersHandler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,7 +63,7 @@ public class GiftCertificateControllerTest {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParameters()))));
+                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParametersHandler(null)))));
     }
 
     @ParameterizedTest
@@ -76,7 +77,7 @@ public class GiftCertificateControllerTest {
                         .param("page", String.valueOf(page)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(parameters))));
+                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParametersHandler(parameters)))));
     }
 
     @ParameterizedTest
@@ -87,7 +88,7 @@ public class GiftCertificateControllerTest {
         mockMvc.perform(get(URL).param("limit", String.valueOf(limit)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(parameters))));
+                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParametersHandler(parameters)))));
 
     }
 
@@ -109,7 +110,7 @@ public class GiftCertificateControllerTest {
         mockMvc.perform(get(URL).param("sort", parameter))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(parameters))));
+                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParametersHandler(parameters)))));
     }
 
     @ParameterizedTest
@@ -120,7 +121,7 @@ public class GiftCertificateControllerTest {
         mockMvc.perform(get(URL).param("sort", parametersArray[0]).param("sort", parametersArray[1]))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(parameters))));
+                .andExpect(content().string(new Gson().toJson(giftCertificateDao.getAll(new GiftCertificateParametersHandler(parameters)))));
     }
 
     private static Stream<Arguments> stringArrayProviderOfTwoSortTypes() {
@@ -134,7 +135,7 @@ public class GiftCertificateControllerTest {
 
     @Test
     void testGetById_whenIdExists() {
-        giftCertificateDao.getAll(new TagParameters()).stream().limit(10).forEach(gs -> {
+        giftCertificateDao.getAll(new GiftCertificateParametersHandler(null)).stream().limit(10).forEach(gs -> {
             try {
                 mockMvc.perform(get(URL + "/" + gs.getId()))
                         .andExpect(status().isOk())

@@ -1,7 +1,6 @@
 package org.example.gc.dao;
 
 import org.apache.logging.log4j.Logger;
-import org.example.gc.model.Parameters;
 import org.example.gc.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,8 +31,8 @@ public class JdbcTagDao implements TagDao {
     private JdbcTemplate jdbcTemplateObject;
 
     @Override
-    public Collection<Tag> getAll(Parameters parameters) {
-        Collection<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parameters.whereClause(), new TagMapper());
+    public Collection<Tag> getAll(ParametersHandler parametersHandler) {
+        Collection<Tag> tags = jdbcTemplateObject.query(SQL_SELECT + parametersHandler.whereClause(), new TagMapper());
         logger.info(tags.size() + " tags found");
         return tags;
     }
@@ -88,4 +87,5 @@ public class JdbcTagDao implements TagDao {
             return tag;
         }
     }
+
 }
