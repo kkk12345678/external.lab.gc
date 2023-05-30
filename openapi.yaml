@@ -1,286 +1,252 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Web service for Gift Certificates system
-  #description: 
-  #termsOfService: http://swagger.io/terms/
-  #contact:
-    #email: apiteam@swagger.io
-  #license:
-    #name: Apache 2.0
-    #url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
-#externalDocs:
-  #description: Find out more about Swagger
-  #url: http://swagger.io
-servers:
-  - url: https://example.org/api
 tags:
-  - name: tag
-    description: CRD operations for tag
-  - name: gs
-    description: CRUD operations for gift certificate
+  - name: tags
+    description: CRD operations for tags
+  - name: gift-certificates
+    description: CRUD operations for gift certificates
 paths:
-  /tag:
+  /tags:
     post:
       tags:
-        - tag
+        - tags
       summary: Add a new tag
-      description: add a new tag
+      description: Add a new tag
       operationId: addTag
       requestBody:
         description: Add a new tag
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Tag'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Tag'
-        required: true
+              $ref: '#/components/schemas/TagRequestDto'
+        required: false
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Successful operation
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/Tag'          
-            application/xml:
+                type: integer
+                description: ID of a created tag
+        '400':
+          description: Invalid input
+          content:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/Tag'
-        '405':
-          description: invalid input
-  /tag/all:        
+                type: string
+                description: Explanation which input is invalid
+        default:
+          description: Other error
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Explanation which error occurred
     get:
       tags:
-        - tag
+        - tags
       summary: Find all tags
       description: find all tags
       operationId: getAllTags
       responses:
         '200':
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'          
-            application/xml:
+                  $ref: '#/components/schemas/TagResponseDto'
+        default:
+          description: Other errors
+          content:
+            text/plain:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Tag'
-  /tag/{tagId}:
+                type: string
+                description: Explanation which error occurred
+  /tags/{tagId}:
     get:
       tags:
-        - tag
+        - tags
       summary: Find a tag by ID
-      description: find a tag by ID
+      description: Find a tag by ID
       operationId: getTagById
       parameters:
         - name: tagId
           in: path
-          description: id of tag to return
+          description: ID of tag to return
           required: true
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Tag'
+                $ref: '#/components/schemas/TagResponseDto'
         '400':
-          description: invalid ID supplied
+          description: Invalid ID supplied
+          content:
+            text/plain:
+              schema:
+                type: string
         '404':
-          description: tag not found
+          description: Tag not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Other errors
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Explanation which error occurred
     delete:
       tags:
-        - tag
+        - tags
       summary: Delete a tag by ID
-      description: delete a tag by ID
+      description: Delete a tag by ID
       operationId: deleteTag
       parameters:
         - name: tagId
           in: path
-          description: Tag id to delete
+          description: Tag ID to delete
           required: true
           schema:
             type: integer
             format: int64
       responses:
-        '200':
-          description: successful operation
-        '405':
-          description: invalid ID supplied
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+          content:
+            text/plain:
+              schema:
+                type: string
         '404':
-          description: tag not found
-  /gs:
+          description: Tag not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Other errors
+          content:
+            text/plain:
+              schema:
+                type: string
+  /gift-certificates:
     post:
       tags:
-        - gs
+        - gift-certificates
       summary: Add a new gift certificate
-      description: add a new gift certificate
+      description: Add a new gift certificate
       operationId: addGiftCertificate
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GiftCertificate'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/GiftCertificate'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/GiftCertificate'
-        required: true
+              $ref: '#/components/schemas/GiftCertificateRequestDto'
+        required: false
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid input
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/GiftCertificate'
-        '405':
-          description: invalid input
-    put:
-      tags:
-        - gs
-      summary: Update a gift certificate
-      description: update a gift certificate
-      operationId: updateGiftCertificate
-      parameters:
-        - name: id
-          in: query
-          description: id of the gift certificate that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: name of the gift certificate that needs to be updated
-          required: false
-          schema:
-            type: string
-        - name: description
-          in: query
-          description: description of the gift certificate that needs to be updated
-          required: false
-          schema:
-            type: string
-        - name: price
-          in: query
-          description: price of the gift certificate that needs to be updated
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: duration
-          in: query
-          description: duration of the gift certificate that needs to be updated
-          required: false
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
+                type: string
+        default:
+          description: Other error
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/GiftCertificate'      
-        '405':
-          description: invalid parameters supplied
-        '404':
-          description: gift certificate not found
+                type: string
     get:
       tags:
-        - gs
+        - gift-certificates
       summary: Find all gift certificates with specified parameters
-      description:  find all gift certificates with specified parameters
-      operationId: getAllGiftCertificatesWithParameters
+      description:  Find all gift certificates with specified parameters
+      operationId: getAllGiftCertificates
       parameters:
+        - name: sort
+          in: query
+          description: Gift certificates sort parameters
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: "^(create_date|name),(asc|desc)$"
+            maxItems: 2
+        - name: search
+          in: query
+          description: Gift certificates search fields
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: "^(name|description),"
+            maxItems: 2
         - name: tagName
           in: query
-          description: gift certificate tag name that needs to be retreived
+          description: Tag name to search
           required: false
           schema:
             type: string
-        - name: searchString
+        - name: limit
           in: query
-          description: gift certificate part of name/description to be searched
+          description: Pagination limit value
           required: false
           schema:
-            type: string
-        - name: sortType
+            type: integer
+            format: int64
+        - name: page
           in: query
-          description: gift certificates sort type
+          description: Pagination page value
           required: false
           schema:
-            type: string
-            enum: [date, name, dateThenName, nameThenDate]
-        - name: sortOrder
-          in: query
-          description: gift certificates sort order
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
+            type: integer
+            format: int64
       responses:
         '200':
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GiftCertificate'          
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GiftCertificate'
-        '405':
-          description: invalid parameters supplied
-  /gs/all:        
-    get:
-      tags:
-        - gs
-      summary: Find all gift certificates
-      description: find all gift certificates
-      operationId: getdAllGiftCertificates
-      responses:
-        '200':
-          description: successful operation
+                  $ref: '#/components/schemas/GiftCertificateResponseDto'
+        '400':
+          description: Invalid parameters supplied
           content:
-            application/json:
+            text/plain:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GiftCertificate'          
-            application/xml:
+                type: string
+        default:
+          description: Other error
+          content:
+            text/plain:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GiftCertificate'
-  /gs/{gsId}:
+                type: string
+  /gift-certificates/{giftCertificateId}:
     get:
       tags:
-        - gs
+        - gift-certificates
       summary: Find gift certificate by ID
       description: Find gift certificate by ID
       operationId: getGiftCertificateById
       parameters:
-        - name: gsId
+        - name: giftCertificateId
           in: path
           description: ID of gift certificate that needs to be found
           required: true
@@ -289,26 +255,78 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GiftCertificate'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/GiftCertificate'
+                $ref: '#/components/schemas/GiftCertificateResponseDto'
         '400':
           description: Invalid ID supplied
+          content:
+            text/plain:
+              schema:
+                type: string
         '404':
           description: Gift certificate not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Other error
+          content:
+            text/plain:
+              schema:
+                type: string
+    put:
+      tags:
+        - gift-certificates
+      summary: Update existing gift certificate
+      description: Update existing gift certificate
+      operationId: updateGiftCertificate
+      parameters:
+        - name: giftCertificateId
+          in: path
+          description: ID of gift certificate that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GiftCertificateRequestDto'
+        required: false
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Gift certificate not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Other error
+          content:
+            text/plain:
+              schema:
+                type: string
     delete:
       tags:
-        - gs
+        - gift-certificates
       summary: Delete gift certificate by ID
       description: Delete gift certificate by ID
       operationId: deleteGiftCertificate
       parameters:
-        - name: gsId
+        - name: giftCertificateId
           in: path
           description: ID of the gift certificate that needs to be deleted
           required: true
@@ -316,31 +334,39 @@ paths:
             type: integer
             format: int64
       responses:
+        '204':
+          description: Successful operation
         '400':
           description: Invalid ID supplied
         '404':
-          description: gift certificate not found
+          description: Gift certificate not found
+        default:
+          description: Other error
+          content:
+            text/plain:
+              schema:
+                type: string
 components:
   schemas:
-    Tag:
+    TagRequestDto:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 198772
         name:
           type: string
           example: 'Birthday'
-      xml:
-        name: tag
-    GiftCertificate:
+    TagResponseDto:
       type: object
       properties:
         id:
           type: integer
           format: int64
-          example: 198772
+          example: 1235
+        name:
+          type: string
+          example: 'Birthday'
+    GiftCertificateRequestDto:
+      type: object
+      properties:
         name:
           type: string
           example: 'Birthday certificate'
@@ -348,20 +374,45 @@ components:
           type: string
           example: 'Some description'
         price:
-          type: integer
-          format: int64
-          example: 1500
+          type: number
+          format: double
+          example: 1500.00
         duration:
           type: integer
           format: int64
           example: 94301
-        create_date:
+        tags:
+          type: array
+          items:
+            type: string
+    GiftCertificateResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 684354
+        name:
           type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-        last_update_date:
+          example: 'Birthday certificate'
+        description:
           type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-      xml:
-        name: gift_certificate
+          example: 'Some description'
+        price:
+          type: number
+          format: double
+          example: 1500.00
+        duration:
+          type: integer
+          format: int64
+          example: 94301
+        createDate:
+          type: string
+          example: "2023-04-29T10:16Z"
+        lastUpdateDate:
+          type: string
+          example: "2023-04-29T10:16Z"
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagResponseDto'
