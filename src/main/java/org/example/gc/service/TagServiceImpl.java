@@ -54,17 +54,11 @@ public class TagServiceImpl implements TagService {
     public Tag add(TagRequestDto tagRequestDto) {
         validate(tagRequestDto);
         String tagName = tagRequestDto.getName();
-        Tag tag = tagRequestDto.toEntity();
         if (tagRepository.getByName(tagName) == null) {
-            entityManager.persist(tag);
-            //return tagRepository.insert(tagRequestDto.toEntity()).getId();
-            log.info(String.format(MESSAGE_TAG_INSERTED, tag));
-            flushAndClear();
-            return tag;
+            return tagRepository.insert(tagRequestDto.toEntity());
         } else {
             throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
         }
-
     }
 
     private void validate(TagRequestDto tagRequestDto) {
