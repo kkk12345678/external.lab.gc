@@ -2,13 +2,13 @@ package org.example.gc.service;
 
 import org.example.gc.dto.TagRequestDto;
 import org.example.gc.dto.TagResponseDto;
-import org.example.gc.model.TagParameters;
+import org.example.gc.entity.TagParameters;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface TagService {
-    Collection<TagResponseDto> getAll(TagParameters tagParameters);
-    long add(TagRequestDto tagRequestDto);
-    void remove(long id);
-    TagResponseDto getById(long id);
+    List<TagResponseDto> getAll(TagParameters tagParameters);
+    Long add(TagRequestDto tagRequestDto);
+    void remove(Long id);
+    TagResponseDto getById(Long id);
 }

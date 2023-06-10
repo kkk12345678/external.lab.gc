@@ -1,7 +1,6 @@
 package org.example.gc.controller;
 
 import org.example.gc.dto.TagRequestDto;
-import org.example.gc.dao.TagParametersHandler;
 import org.example.gc.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

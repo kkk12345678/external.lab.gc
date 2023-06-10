@@ -1,4 +1,4 @@
-package org.example.gc.dao;
+package org.example.gc.JDBC;
 
 public class TagDaoTest {
 }

@@ -3,7 +3,7 @@ package org.example.gc.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.example.gc.model.Tag;
+import org.example.gc.entity.Tag;
 
 @Data
 public class TagRequestDto {
@@ -12,8 +12,6 @@ public class TagRequestDto {
     private String name;
 
     public Tag toEntity() {
-        Tag tag = new Tag();
-        tag.setName(name);
-        return tag;
+        return new Tag(null, name);
     }
 }

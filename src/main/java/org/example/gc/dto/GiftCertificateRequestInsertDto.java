@@ -3,13 +3,15 @@ package org.example.gc.dto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.gc.model.GiftCertificate;
+import lombok.ToString;
+import org.example.gc.entity.GiftCertificate;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Getter
 @Setter
-public class GiftCertificateRequestInsertDto {
+@ToString
+public class GiftCertificateRequestInsertDto implements GiftCertificateRequestDto {
     @Positive(message = "Gift certificate parameter 'price' must be positive double.")
     @NotNull(message = "Gift certificate parameter 'price' must not be empty.")
     private Double price;
@@ -19,7 +21,7 @@ public class GiftCertificateRequestInsertDto {
     @NotBlank(message = "Gift certificate parameter 'name' must not be empty.")
     @Size(max = 256, message = "Gift certificate parameter 'name' must not contain more than 256 characters.")
     private String name;
-    private Collection<TagRequestDto> tags;
+    private Set<TagRequestDto> tags;
     private String description;
 
     public GiftCertificate toEntity() {

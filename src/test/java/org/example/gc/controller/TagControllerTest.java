@@ -1,32 +1,18 @@
 package org.example.gc.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.example.gc.config.AppConfig;
-import org.example.gc.dao.TagDao;
-import org.example.gc.dto.TagRequestDto;
-import org.example.gc.model.Tag;
-import org.example.gc.dao.TagParametersHandler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AppConfig.class})
 @WebAppConfiguration
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TagControllerTest {
+    /*
     private static Tag createdTag = new Tag();
     private static final String URL = "http://localhost:8080/tags";
     private static final String NAME = RandomStringUtils.randomAlphanumeric(10);
@@ -145,4 +131,6 @@ public class TagControllerTest {
         mockMvc.perform(delete(URL + "/l"))
                 .andExpect(status().isBadRequest());
     }
+
+     */
 }

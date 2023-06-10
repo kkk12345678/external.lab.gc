@@ -1,20 +1,11 @@
 package org.example.gc.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.example.gc.model.Tag;
 
 @Data
+@AllArgsConstructor
 public class TagResponseDto {
     private long id;
     private String name;
-
-    public static TagResponseDto fromEntityToDto(Tag tag) {
-        if (tag == null) {
-            return null;
-        }
-        TagResponseDto tagResponseDto = new TagResponseDto();
-        tagResponseDto.setId(tag.getId());
-        tagResponseDto.setName(tag.getName());
-        return tagResponseDto;
-    }
 }

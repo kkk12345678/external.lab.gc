@@ -1,18 +1,13 @@
 package org.example.gc.config;
 
-import com.fasterxml.classmate.AnnotationConfiguration;
-import jakarta.persistence.EntityManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.example.gc.entity.GiftCertificatesParametersResolver;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -22,22 +17,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.sql.DataSource;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 @EnableWebMvc
 @Configuration
 @ComponentScan("org.example.gc")
 @PropertySource("classpath:application.properties")
+@EnableTransactionManagement
 public class AppConfig implements WebMvcConfigurer {
     @Autowired
-    protected Environment environment;
-
-    @Bean
-    public Logger loggerBean(InjectionPoint injectionPoint) {
-        return LogManager.getLogger(injectionPoint.getMember().getDeclaringClass());
-    }
+    private Environment environment;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -45,15 +36,22 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public DataSource dataSourceBean() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(environment.getProperty("jdbc.url"));
+        config.setDriverClassName(environment.getProperty("jdbc.driver"));
+        config.setUsername(environment.getProperty("jdbc.user"));
+        config.setPassword(environment.getProperty("jdbc.password"));
+        config.setMaximumPoolSize(10);
+        config.setAutoCommit(true);
+        return new HikariDataSource(config);
+    }
+
+    @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("jdbc.driver")));
-        dataSource.setUrl(environment.getProperty("jdbc.url"));
-        dataSource.setUsername(environment.getProperty("jdbc.user"));
-        dataSource.setPassword(environment.getProperty("jdbc.password"));
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean
                 = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(dataSource);
+        entityManagerFactoryBean.setDataSource(dataSourceBean());
         entityManagerFactoryBean.setPackagesToScan("org.example.gc");
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
@@ -68,7 +66,15 @@ public class AppConfig implements WebMvcConfigurer {
                 environment.getProperty("hibernate.cache.use_query_cache"));
         hibernateProperties.setProperty("hibernate.cache.use_query_cache",
                 environment.getProperty("hibernate.cache.use_query_cache"));
+        hibernateProperties.setProperty("hibernate.show_sql", "true");
         entityManagerFactoryBean.setJpaProperties(hibernateProperties);
         return entityManagerFactoryBean;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManagerBean(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
     }
 }

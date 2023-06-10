@@ -2,8 +2,7 @@ package org.example.gc.controller;
 
 import org.example.gc.dto.GiftCertificateRequestInsertDto;
 import org.example.gc.dto.GiftCertificateRequestUpdateDto;
-import org.example.gc.dao.GiftCertificateParametersHandler;
-import org.example.gc.model.GiftCertificateParameters;
+import org.example.gc.entity.GiftCertificateParameters;
 import org.example.gc.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,8 +23,7 @@ public class GiftCertificateController {
     }
 
     @GetMapping("/{giftCertificateId}")
-    public ResponseEntity<Object> getGiftCertificateIdById(
-            @PathVariable(GIFT_CERTIFICATE_ID) Long id) {
+    public ResponseEntity<Object> getGiftCertificateIdById(@PathVariable(GIFT_CERTIFICATE_ID) Long id) {
         return new ResponseEntity<>(
                 giftCertificateService.getById(id), HttpStatus.OK);
     }
@@ -46,8 +44,7 @@ public class GiftCertificateController {
     }
 
     @DeleteMapping("/{giftCertificateId}")
-    public ResponseEntity<Object> deleteGiftCertificate(
-            @PathVariable("giftCertificateId") Long id) {
+    public ResponseEntity<Object> deleteGiftCertificate(@PathVariable(GIFT_CERTIFICATE_ID) Long id) {
         giftCertificateService.remove(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
