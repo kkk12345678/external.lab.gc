@@ -4,15 +4,12 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.extern.slf4j.Slf4j;
-import org.example.gc.entity.GiftCertificate;
-import org.example.gc.entity.GiftCertificateParameters;
-import org.example.gc.entity.Parameters;
-import org.example.gc.entity.Tag;
+import org.example.gc.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -21,11 +18,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String SEARCH_PATTERN = "%%%s%%";
     private static final String SPLIT_REGEX = ",";
 
+    private static final String FIELD_TAGS = "tags";
     private static final String FIELD_DATE = "createDate";
     private static final String PARAM_DATE = "date";
 
     private static final String SORT_ASC = "asc";
     private static final String SORT_DESC = "desc";
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,11 +33,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<GiftCertificate> getAll(Parameters parameters) {
-
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
+        CriteriaQuery<GiftCertificate> criteriaQuery =
+                criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> root = criteriaQuery.from(GiftCertificate.class);
-
         setSearch((GiftCertificateParameters) parameters, criteriaBuilder, criteriaQuery, root);
         setSort((GiftCertificateParameters) parameters, criteriaBuilder, criteriaQuery, root);
         criteriaQuery.select(root);
@@ -75,7 +73,19 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
     }
 
-    @SuppressWarnings("unchecked")
+    private List<Long> searchByTagName(String tagName) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> criteriaQuery =
+                criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> root = criteriaQuery.from(GiftCertificate.class);
+        root.join(GiftCertificate_.tags);
+        criteriaQuery.select(root).distinct(true)
+                .where(criteriaBuilder.like(root.get(FIELD_TAGS).get(FIELD_NAME),
+                        String.format(SEARCH_PATTERN, tagName)));
+        TypedQuery<GiftCertificate> query = entityManager.createQuery(criteriaQuery);
+        return query.getResultList().stream().map(GiftCertificate::getId).collect(Collectors.toList());
+    }
+
     private void setSearch(GiftCertificateParameters giftCertificateParameters,
                            CriteriaBuilder criteriaBuilder,
                            CriteriaQuery<GiftCertificate> criteriaQuery,
@@ -91,18 +101,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         String tagName = giftCertificateParameters.getTagName();
         if (tagName != null) {
-            /*
             In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
-            SetJoin<GiftCertificate, Tag> giftCertificates = root.join(GiftCertificate_.tags, JoinType.INNER);
-
-
-            tagRepository.searchByName(tagName).forEach(tag -> {
-                GiftCertificate giftCertificate
-                inClause.value(tag.getId())
-            });
+            searchByTagName(tagName).forEach(inClause::value);
             predicates.add(inClause);
 
-             */
         }
         Predicate[] array = new Predicate[predicates.size()];
         predicates.toArray(array);

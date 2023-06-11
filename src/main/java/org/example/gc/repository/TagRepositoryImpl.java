@@ -5,7 +5,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
-import org.example.gc.entity.GiftCertificate;
 import org.example.gc.entity.Parameters;
 import org.example.gc.entity.Tag;
 import org.springframework.stereotype.Repository;

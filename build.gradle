@@ -8,6 +8,8 @@ plugins {
 	//id 'io.spring.dependency-management' version '1.1.0'
 }
 
+
+
 flyway {
 	url = 'jdbc:mysql://localhost:3306/gs'
 	user = 'root'
@@ -23,6 +25,8 @@ repositories {
 }
 
 dependencies {
+	annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.1.7.Final'
+	compileOnly 'org.hibernate:hibernate-jpamodelgen:6.1.7.Final'
 	//implementation 'org.springframework.boot:spring-boot-starter-parent:3.1.0'
 	//implementation 'org.springframework.boot:spring-boot-starter:3.1.0'
 	implementation 'org.hibernate.orm:hibernate-core:6.2.3.Final'
@@ -45,7 +49,7 @@ dependencies {
 
 	implementation 'org.slf4j:slf4j-simple:2.0.7'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.glassfish:jakarta.el:4.0.2'
 	testImplementation 'com.jayway.jsonpath:json-path-assert:2.8.0'
 	testImplementation 'io.rest-assured:rest-assured:5.3.0'
