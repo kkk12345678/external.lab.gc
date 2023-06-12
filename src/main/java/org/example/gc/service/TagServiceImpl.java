@@ -1,5 +1,6 @@
 package org.example.gc.service;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.example.gc.entity.TagParameters;
 import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;

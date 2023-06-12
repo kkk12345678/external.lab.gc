@@ -16,7 +16,6 @@ import java.util.List;
 public class TagRepositoryImpl implements TagRepository {
     private static final String JPQL_BY_NAME = "select t from Tag t where t.name = :name";
     private static final String JPQL_ALL = "from Tag";
-    private static final String SEARCH_PATTERN = "%%%s%%";
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -51,14 +50,5 @@ public class TagRepositoryImpl implements TagRepository {
         } catch (NoResultException e) {
             return null;
         }
-    }
-
-    @Override
-    public List<Tag> searchByName(String name) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
-        Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.select(root).where(criteriaBuilder.like(root.get(FIELD_NAME), String.format(SEARCH_PATTERN, name)));
-        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 }

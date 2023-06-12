@@ -1,52 +1,30 @@
-package org.example.gc.config;
+package org.example.gc;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
-import jakarta.persistence.EntityManagerFactory;
 import org.example.gc.entity.GiftCertificatesParametersResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.sql.DataSource;
 import java.util.List;
-import java.util.Properties;
 
-@EnableWebMvc
-@Configuration
-@ComponentScan("org.example.gc")
-@PropertySource("classpath:application.properties")
-@EnableTransactionManagement
-public class AppConfig implements WebMvcConfigurer {
+@SpringBootApplication
+public class Application implements WebMvcConfigurer {
     @Autowired
     private Environment environment;
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new GiftCertificatesParametersResolver());
     }
 
-    @Bean
-    public DataSource dataSourceBean() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(environment.getProperty("jdbc.url"));
-        config.setDriverClassName(environment.getProperty("jdbc.driver"));
-        config.setUsername(environment.getProperty("jdbc.user"));
-        config.setPassword(environment.getProperty("jdbc.password"));
-        config.setMaximumPoolSize(10);
-        config.setAutoCommit(true);
-        return new HikariDataSource(config);
-    }
-
+    /*
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean
@@ -66,9 +44,21 @@ public class AppConfig implements WebMvcConfigurer {
                 environment.getProperty("hibernate.cache.use_query_cache"));
         hibernateProperties.setProperty("hibernate.cache.use_query_cache",
                 environment.getProperty("hibernate.cache.use_query_cache"));
-        hibernateProperties.setProperty("hibernate.show_sql", "true");
+        //hibernateProperties.setProperty("hibernate.show_sql", "true");
         entityManagerFactoryBean.setJpaProperties(hibernateProperties);
         return entityManagerFactoryBean;
+    }
+
+    @Bean
+    public DataSource dataSourceBean() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(environment.getProperty("jdbc.url"));
+        config.setDriverClassName(environment.getProperty("jdbc.driver"));
+        config.setUsername(environment.getProperty("jdbc.user"));
+        config.setPassword(environment.getProperty("jdbc.password"));
+        config.setMaximumPoolSize(10);
+        config.setAutoCommit(true);
+        return new HikariDataSource(config);
     }
 
     @Bean
@@ -77,4 +67,20 @@ public class AppConfig implements WebMvcConfigurer {
         transactionManager.setEntityManagerFactory(entityManagerFactory);
         return transactionManager;
     }
+
+
+
+    @Override
+    public void onStartup(ServletContext servletContext) {
+        AnnotationConfigWebApplicationContext context = new
+                AnnotationConfigWebApplicationContext();
+        context.scan("org.example.gc");
+        servletContext.addListener(new ContextLoaderListener(context));
+        ServletRegistration.Dynamic dispatcher =
+                servletContext.addServlet("mvc", new DispatcherServlet(context));
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping("/");
+    }
+
+     */
 }

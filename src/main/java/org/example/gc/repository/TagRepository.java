@@ -5,5 +5,4 @@ import org.example.gc.entity.Tag;
 import java.util.List;
 
 public interface TagRepository extends EntityRepository<Tag> {
-    List<Tag> searchByName(String name);
 }
