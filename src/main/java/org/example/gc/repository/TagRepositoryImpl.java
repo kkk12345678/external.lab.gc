@@ -2,14 +2,16 @@ package org.example.gc.repository;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
-import org.example.gc.entity.Parameters;
 import org.example.gc.entity.Tag;
+import org.example.gc.parameters.TagParameters;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Repository
@@ -20,14 +22,15 @@ public class TagRepositoryImpl implements TagRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Tag> getAll(Parameters parameters) {
-        return entityManager.createQuery(JPQL_ALL, Tag.class).getResultList();
+    public List<Tag> getAll(TagParameters parameters) {
+        TypedQuery<Tag> query = entityManager.createQuery(JPQL_ALL, Tag.class);
+        setPagination(query, parameters);
+        return query.getResultList();
     }
 
     @Override
     public Tag insertOrUpdate(Tag tag) {
         entityManager.persist(tag);
-        entityManager.flush();
         return tag;
     }
 
@@ -50,5 +53,16 @@ public class TagRepositoryImpl implements TagRepository {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<Tag> getByNames(Set<String> tagNames) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> root = criteriaQuery.from(Tag.class);
+        In<String> inClause = criteriaBuilder.in(root.get(FIELD_NAME));
+        tagNames.forEach(inClause::value);
+        criteriaQuery.where(inClause);
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 }

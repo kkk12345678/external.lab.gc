@@ -1,6 +1,5 @@
 package org.example.gc.controller;
 
-import org.example.gc.config.AppConfig;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -8,7 +7,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfig.class})
 @WebAppConfiguration
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TagControllerTest {

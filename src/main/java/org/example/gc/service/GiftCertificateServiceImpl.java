@@ -6,15 +6,14 @@ import jakarta.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.*;
 import org.example.gc.entity.GiftCertificate;
-import org.example.gc.entity.GiftCertificateParameters;
+import org.example.gc.parameters.GiftCertificateParameters;
 import org.example.gc.entity.Tag;
 import org.example.gc.repository.GiftCertificateRepository;
 import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,25 +46,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private TagRepository tagRepository;
 
     @Override
-    public GiftCertificateResponseDto getById(Long id) {
+    public GiftCertificate getById(Long id) {
         GiftCertificate giftCertificate = check(id);
         log.info(String.format(MESSAGE_GIFT_CERTIFICATE_FOUND, giftCertificate));
-        return giftCertificate.toResponseDto();
+        return giftCertificate;
     }
 
     @Override
-    public GiftCertificateResponseDto getByName(String name) {
+    public GiftCertificate getByName(String name) {
         GiftCertificate giftCertificate = giftCertificateRepository.getByName(name);
         if (giftCertificate == null) {
             throw new NoSuchElementException(String.format(ERROR_NAME_NOT_FOUND, name));
         }
         log.info(String.format(MESSAGE_GIFT_CERTIFICATE_FOUND, giftCertificate));
-        return giftCertificate.toResponseDto();
+        return giftCertificate;
     }
 
     @Override
     @Transactional
-    public Long add(GiftCertificateRequestInsertDto giftCertificateRequestInsertDto) {
+    public GiftCertificate add(GiftCertificateRequestInsertDto giftCertificateRequestInsertDto) {
         validate(giftCertificateRequestInsertDto);
         String name = giftCertificateRequestInsertDto.getName();
         if (giftCertificateRepository.getByName(name) != null) {
@@ -73,11 +72,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         GiftCertificate giftCertificateToInsert = giftCertificateRequestInsertDto.toEntity();
         setTags(giftCertificateToInsert, giftCertificateRequestInsertDto);
-        giftCertificateToInsert.setCreateDate(getDate());
-        giftCertificateToInsert.setLastUpdateDate(getDate());
+        Instant now = Instant.now();
+        giftCertificateToInsert.setCreateDate(now);
+        giftCertificateToInsert.setLastUpdateDate(now);
         GiftCertificate giftCertificate = giftCertificateRepository.insertOrUpdate(giftCertificateToInsert);
         log.info(String.format(MESSAGE_GIFT_CERTIFICATE_INSERTED, giftCertificate));
-        return giftCertificate.getId();
+        return giftCertificate;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void update(Long id, GiftCertificateRequestUpdateDto giftCertificateRequestUpdateDto) {
+    public GiftCertificate update(Long id, GiftCertificateRequestUpdateDto giftCertificateRequestUpdateDto) {
         validate(giftCertificateRequestUpdateDto);
         GiftCertificate giftCertificate = check(id);
         String description = giftCertificateRequestUpdateDto.getDescription();
@@ -114,19 +114,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate.setDuration(duration);
         }
         setTags(giftCertificate, giftCertificateRequestUpdateDto);
-        giftCertificate.setLastUpdateDate(getDate());
-        giftCertificateRepository.insertOrUpdate(giftCertificate);
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_UPDATED, giftCertificate));
+        giftCertificate.setLastUpdateDate(Instant.now());
+        GiftCertificate updatedGiftCertificate = giftCertificateRepository.insertOrUpdate(giftCertificate);
+        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_UPDATED, updatedGiftCertificate));
+        return updatedGiftCertificate;
     }
 
     @Override
-    public List<GiftCertificateResponseDto> getAll(GiftCertificateParameters giftCertificateParameters) {
+    public List<GiftCertificate> getAll(GiftCertificateParameters giftCertificateParameters) {
         List<GiftCertificate> giftCertificates =
                 giftCertificateRepository.getAll(giftCertificateParameters);
         log.info(String.format(MESSAGE_GIFT_CERTIFICATES_FOUND, giftCertificates.size()));
-        return giftCertificates.stream().
-                map(GiftCertificate::toResponseDto).
-                collect(Collectors.toList());
+        return giftCertificates;
     }
 
     private GiftCertificate check(Long id) {
@@ -149,19 +148,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void setTags(GiftCertificate giftCertificate, GiftCertificateRequestDto giftCertificateRequestDto) {
-        Set<Tag> tags = new HashSet<>();
-        giftCertificateRequestDto.getTags().forEach(tagRequestDto -> {
-            String tagName = tagRequestDto.getName();
-            Tag tag = tagRepository.getByName(tagName);
-            tags.add(tag == null ? new Tag(null, tagName) : tag);
-        });
+        Set<String> tagNames = giftCertificateRequestDto.getTags().stream()
+                .map(TagRequestDto::getName)
+                .collect(Collectors.toSet());
+        Set<Tag> tags = new HashSet<>(tagRepository.getByNames(tagNames));
+        Set<String> existingNames = tags.stream().map(Tag::getName).collect(Collectors.toSet());
+        tagNames.stream()
+                .filter(name -> !existingNames.contains(name))
+                .forEach(name -> tags.add(new Tag(null, name)));
         giftCertificate.setTags(tags);
-    }
-
-    private static String getDate() {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        df.setTimeZone(tz);
-        return df.format(new Date());
     }
 }

@@ -6,8 +6,7 @@ import jakarta.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.entity.Tag;
 import org.example.gc.dto.TagRequestDto;
-import org.example.gc.dto.TagResponseDto;
-import org.example.gc.entity.TagParameters;
+import org.example.gc.parameters.TagParameters;
 import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,21 +42,21 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
 
     @Override
-    public List<TagResponseDto> getAll(TagParameters tagParameters) {
+    public List<Tag> getAll(TagParameters tagParameters) {
         List<Tag> tags = tagRepository.getAll(tagParameters);
         log.info(String.format(MESSAGE_TAGS_FOUND, tags.size()));
-        return tags.stream().map(Tag::toResponseDto).collect(Collectors.toList());
+        return tags;
     }
 
     @Override
     @Transactional
-    public Long add(TagRequestDto tagRequestDto) {
+    public Tag add(TagRequestDto tagRequestDto) {
         validate(tagRequestDto);
         String tagName = tagRequestDto.getName();
         if (tagRepository.getByName(tagName) == null) {
             Tag tag = tagRepository.insertOrUpdate(tagRequestDto.toEntity());
             log.info(String.format(MESSAGE_TAG_INSERTED, tag));
-            return tag.getId();
+            return tag;
         } else {
             throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
         }
@@ -72,10 +71,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagResponseDto getById(Long id) {
+    public Tag getById(Long id) {
         Tag tag = check(id);
         log.info(String.format(MESSAGE_TAG_FOUND, tag));
-        return tag.toResponseDto();
+        return tag;
     }
 
     private void validate(TagRequestDto tagRequestDto) {

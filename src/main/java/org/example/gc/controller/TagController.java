@@ -1,6 +1,8 @@
 package org.example.gc.controller;
 
 import org.example.gc.dto.TagRequestDto;
+import org.example.gc.entity.Tag;
+import org.example.gc.parameters.TagParameters;
 import org.example.gc.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,23 +17,23 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public ResponseEntity<Object> getAllTags() {
-        return new ResponseEntity<>(tagService.getAll(null), HttpStatus.OK);
+    public ResponseEntity<Object> getAllTags(TagParameters tagParameters) {
+        return new ResponseEntity<>(tagService.getAll(tagParameters), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{tagId}")
-    public ResponseEntity<Object> getTagById(@PathVariable(TAG_ID) Long id) {
-        return new ResponseEntity<>(tagService.getById(id), HttpStatus.OK);
+    public Tag getTagById(@PathVariable(TAG_ID) Long id) {
+        return tagService.getById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Object> addTag(@RequestBody(required = false) TagRequestDto tagRequestDto) {
+    public ResponseEntity<Object> addTag(@RequestBody TagRequestDto tagRequestDto) {
         return new ResponseEntity<>(tagService.add(tagRequestDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{tagId}")
-    public ResponseEntity<Object> deleteTag(@PathVariable(TAG_ID) Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTag(@PathVariable(TAG_ID) Long id) {
         tagService.remove(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -5,7 +5,5 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TagResponseDto {
-    private long id;
-    private String name;
+public class UserDto {
 }

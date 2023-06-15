@@ -1,4 +1,4 @@
-package org.example.gc.entity;
+package org.example.gc.parameters;
 
 public class TagParameters extends Parameters {
 }

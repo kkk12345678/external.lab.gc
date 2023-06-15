@@ -9,8 +9,8 @@ CREATE TABLE gift_certificates (
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     duration INT NOT NULL,
-    create_date VARCHAR(20) NOT NULL,
-    last_update_date VARCHAR(20) NOT NULL
+    create_date DATETIME NOT NULL,
+    last_update_date DATETIME NOT NULL
 );
 
 CREATE TABLE gift_certificate_tags (

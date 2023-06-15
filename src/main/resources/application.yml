@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mysql://localhost:3306/gc
+    username: root
+    password: x2Aht9LND6g3
+    driver-class-name: com.mysql.cj.jdbc.Driver

@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.entity.*;
+import org.example.gc.parameters.GiftCertificateParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -32,23 +33,22 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private TagRepository tagRepository;
 
     @Override
-    public List<GiftCertificate> getAll(Parameters parameters) {
+    public List<GiftCertificate> getAll(GiftCertificateParameters parameters) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> criteriaQuery =
                 criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> root = criteriaQuery.from(GiftCertificate.class);
-        setSearch((GiftCertificateParameters) parameters, criteriaBuilder, criteriaQuery, root);
-        setSort((GiftCertificateParameters) parameters, criteriaBuilder, criteriaQuery, root);
+        setSearch(parameters, criteriaBuilder, criteriaQuery, root);
+        setSort(parameters, criteriaBuilder, criteriaQuery, root);
         criteriaQuery.select(root);
         TypedQuery<GiftCertificate> query = entityManager.createQuery(criteriaQuery);
-        setPagination((GiftCertificateParameters) parameters, query);
+        setPagination(query, parameters);
         return query.getResultList();
     }
 
     @Override
     public GiftCertificate insertOrUpdate(GiftCertificate giftCertificate) {
         entityManager.persist(giftCertificate);
-        entityManager.flush();
         return giftCertificate;
     }
 
@@ -134,16 +134,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 }
             });
             criteriaQuery.orderBy(orders);
-        }
-    }
-
-    private void setPagination(GiftCertificateParameters giftCertificateParameters,
-                               TypedQuery<GiftCertificate> query) {
-        Integer limit = giftCertificateParameters.getLimit();
-        Integer page = giftCertificateParameters.getPage();
-        if (limit != null) {
-            query.setMaxResults(limit);
-            query.setFirstResult(page == null ? 0 : (page - 1) * limit);
         }
     }
 }

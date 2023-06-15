@@ -1,6 +1,7 @@
 package org.example.gc;
 
-import org.example.gc.entity.GiftCertificatesParametersResolver;
+import org.example.gc.parameters.GiftCertificatesParametersResolver;
+import org.example.gc.parameters.TagParametersResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +23,7 @@ public class Application implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new GiftCertificatesParametersResolver());
+        argumentResolvers.add(new TagParametersResolver());
     }
 
     /*
