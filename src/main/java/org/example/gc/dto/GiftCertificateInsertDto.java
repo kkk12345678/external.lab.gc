@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class GiftCertificateRequestInsertDto implements GiftCertificateRequestDto {
+public class GiftCertificateInsertDto implements GiftCertificateDto {
     @Positive(message = "Gift certificate parameter 'price' must be positive double.")
     @NotNull(message = "Gift certificate parameter 'price' must not be empty.")
     private Double price;
@@ -21,7 +21,7 @@ public class GiftCertificateRequestInsertDto implements GiftCertificateRequestDt
     @NotBlank(message = "Gift certificate parameter 'name' must not be empty.")
     @Size(max = 256, message = "Gift certificate parameter 'name' must not contain more than 256 characters.")
     private String name;
-    private Set<TagRequestDto> tags;
+    private Set<TagDto> tags;
     private String description;
 
     public GiftCertificate toEntity() {

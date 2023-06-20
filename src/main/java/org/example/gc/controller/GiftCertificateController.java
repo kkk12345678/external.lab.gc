@@ -1,13 +1,12 @@
 package org.example.gc.controller;
 
-import org.example.gc.dto.GiftCertificateRequestInsertDto;
-import org.example.gc.dto.GiftCertificateRequestUpdateDto;
+import org.example.gc.dto.GiftCertificateInsertDto;
+import org.example.gc.dto.GiftCertificateUpdateDto;
 import org.example.gc.entity.GiftCertificate;
 import org.example.gc.parameters.GiftCertificateParameters;
 import org.example.gc.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,15 +31,15 @@ public class GiftCertificateController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificate addGiftCertificate(
-            @RequestBody(required = false) GiftCertificateRequestInsertDto giftCertificateRequestInsertDto) {
-        return giftCertificateService.add(giftCertificateRequestInsertDto);
+            @RequestBody(required = false) GiftCertificateInsertDto dto) {
+        return giftCertificateService.add(dto);
     }
 
     @PutMapping("/{giftCertificateId}")
     public GiftCertificate updateGiftCertificate(
             @PathVariable(GIFT_CERTIFICATE_ID) Long id,
-            @RequestBody(required = false) GiftCertificateRequestUpdateDto giftCertificateRequestUpdateDto) {
-        return giftCertificateService.update(id, giftCertificateRequestUpdateDto);
+            @RequestBody(required = false) GiftCertificateUpdateDto dto) {
+        return giftCertificateService.update(id, dto);
     }
 
     @DeleteMapping("/{giftCertificateId}")

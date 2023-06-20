@@ -1,11 +1,9 @@
 package org.example.gc.service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
+import org.example.gc.dto.TagDto;
 import org.example.gc.entity.Tag;
-import org.example.gc.dto.TagRequestDto;
 import org.example.gc.parameters.TagParameters;
 import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,26 +11,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class TagServiceImpl implements TagService {
-
-    private static final String ERROR_PARAMS_VIOLATION =
-            "Tag parameters have the following violations : [%s]";
+public class TagServiceImpl extends AbstractService implements TagService {
     private static final String ERROR_NAME_ALREADY_EXISTS =
             "Tag with name '%s' already exists.";
     private static final String ERROR_ID_NOT_FOUND =
             "There is no tag with 'id' = '%d'.";
-
-    private static final String MESSAGE_TAG_FOUND =
-            "Tag %s was successfully found.";
-    private static final String MESSAGE_TAG_INSERTED =
-            "%s was successfully inserted.";
-    private static final String MESSAGE_TAG_DELETED =
-            "%s was successfully deleted.";
     private static final String MESSAGE_TAGS_FOUND =
             "%d tags were successfully found.";
     private static final String MESSAGE_NO_TAG_BY_ID_FOUND =
@@ -50,12 +36,12 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag add(TagRequestDto tagRequestDto) {
-        validate(tagRequestDto);
-        String tagName = tagRequestDto.getName();
+    public Tag add(TagDto dto) {
+        validate(dto);
+        String tagName = dto.getName();
         if (tagRepository.getByName(tagName) == null) {
-            Tag tag = tagRepository.insertOrUpdate(tagRequestDto.toEntity());
-            log.info(String.format(MESSAGE_TAG_INSERTED, tag));
+            Tag tag = tagRepository.insertOrUpdate(dto.toEntity());
+            log.info(String.format(MESSAGE_INSERTED, tag));
             return tag;
         } else {
             throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
@@ -67,25 +53,14 @@ public class TagServiceImpl implements TagService {
     public void remove(Long id) {
         Tag tag = check(id);
         tagRepository.delete(tag);
-        log.info(String.format(MESSAGE_TAG_DELETED, tag));
+        log.info(String.format(MESSAGE_DELETED, tag));
     }
 
     @Override
     public Tag getById(Long id) {
         Tag tag = check(id);
-        log.info(String.format(MESSAGE_TAG_FOUND, tag));
+        log.info(String.format(MESSAGE_FOUND, tag));
         return tag;
-    }
-
-    private void validate(TagRequestDto tagRequestDto) {
-        Set<ConstraintViolation<TagRequestDto>> violations
-                = Validation.buildDefaultValidatorFactory().getValidator().validate(tagRequestDto);
-        if (violations.size() > 0) {
-            throw new IllegalArgumentException(String.format(ERROR_PARAMS_VIOLATION,
-                    violations.stream()
-                            .map(ConstraintViolation::getMessage)
-                            .collect(Collectors.joining(", "))));
-        }
     }
 
     private Tag check(Long id) {

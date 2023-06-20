@@ -1,4 +1,4 @@
-package org.example.gc.controller;
+package org.example.gc.config;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpHeaders;

@@ -5,7 +5,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
 import org.example.gc.entity.Tag;
 import org.example.gc.parameters.TagParameters;
 import org.springframework.stereotype.Repository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
 @Repository
 public class TagRepositoryImpl implements TagRepository {
     private static final String JPQL_BY_NAME = "select t from Tag t where t.name = :name";

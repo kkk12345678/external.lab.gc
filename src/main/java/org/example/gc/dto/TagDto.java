@@ -10,12 +10,13 @@ import org.example.gc.entity.Tag;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagRequestDto {
+public class TagDto implements EntityDto<Tag> {
     @NotBlank(message="Tag parameter 'name' must not be empty.")
     @Size(max = 256, message = "Tag parameter 'name' must not contain more than 256 characters.")
     private String name;
 
+    @Override
     public Tag toEntity() {
-        return new Tag(null, name);
+        return new Tag(name);
     }
 }

@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.example.gc.dto.UserDto;
 
-import java.util.Set;
-
 @Entity
 @Table(
         name = "users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+        uniqueConstraints = {@UniqueConstraint(columnNames = "user_name")})
 @Data
 public class User {
     @Id
@@ -17,30 +15,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "firstname")
-    private String firstname;
+    @Column(name = "user_name")
+    private String name;
 
-    @Column(name = "lastname")
-    private String lastname;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "password")
+    @Column(name = "user_password")
     private String password;
 
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.PERSIST,
-            orphanRemoval = true
-    )
-    private Set<GiftCertificate> giftCertificates;
-
     public UserDto toUserDto() {
-        return new UserDto();
+        return new UserDto(name, role.getName(), password);
     }
 }

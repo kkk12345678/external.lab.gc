@@ -3,7 +3,7 @@ package org.example.gc.repository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.persistence.criteria.Order;
 import org.example.gc.entity.*;
 import org.example.gc.parameters.GiftCertificateParameters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private static final String JPQL_SELECT_BY_NAME = "select gc from GiftCertificate gc where gc.name = :name";

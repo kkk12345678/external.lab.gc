@@ -1,5 +1,27 @@
 package org.example.gc.entity;
 
-public enum Role {
-    USER, ADMIN
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Set;
+
+@Entity
+@Table(
+        name = "roles",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "role_name")})
+@Data
+@NoArgsConstructor
+public class Role {
+    @Id
+    @Column(name = "role_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "role_name", nullable = false)
+    private String name;
+
+    public Role(String name) {
+        this.name = name;
+    }
 }

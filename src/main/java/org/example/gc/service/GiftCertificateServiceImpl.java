@@ -1,8 +1,6 @@
 package org.example.gc.service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.*;
 import org.example.gc.entity.GiftCertificate;
@@ -19,26 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class GiftCertificateServiceImpl implements GiftCertificateService {
-    private static final String ERROR_PARAMS_VIOLATION =
-            "Gift certificate parameters have the following violations : [%s]";
+public class GiftCertificateServiceImpl extends AbstractService implements GiftCertificateService {
     private static final String ERROR_NAME_ALREADY_EXISTS =
             "Gift certificate with name '%s' already exists.";
     private static final String ERROR_ID_NOT_FOUND =
             "There is no gift certificate with 'id' = '%d'.";
     private static final String ERROR_NAME_NOT_FOUND =
             "There is no gift certificate with 'name' = '%s'.";
-
-    private static final String MESSAGE_GIFT_CERTIFICATE_FOUND =
-            "%s was successfully found.";
     private static final String MESSAGE_GIFT_CERTIFICATES_FOUND =
             "%d gift certificates were successfully found.";
-    private static final String MESSAGE_GIFT_CERTIFICATE_INSERTED =
-            "%s successfully inserted.";
-    private static final String MESSAGE_GIFT_CERTIFICATE_DELETED =
-            "%s successfully deleted.";
-    private static final String MESSAGE_GIFT_CERTIFICATE_UPDATED =
-            "%s successfully updated.";
+
 
     @Autowired
     private GiftCertificateRepository giftCertificateRepository;
@@ -48,7 +36,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate getById(Long id) {
         GiftCertificate giftCertificate = check(id);
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_FOUND, giftCertificate));
+        log.info(String.format(MESSAGE_FOUND, giftCertificate));
         return giftCertificate;
     }
 
@@ -58,25 +46,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (giftCertificate == null) {
             throw new NoSuchElementException(String.format(ERROR_NAME_NOT_FOUND, name));
         }
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_FOUND, giftCertificate));
+        log.info(String.format(MESSAGE_FOUND, giftCertificate));
         return giftCertificate;
     }
 
     @Override
     @Transactional
-    public GiftCertificate add(GiftCertificateRequestInsertDto giftCertificateRequestInsertDto) {
-        validate(giftCertificateRequestInsertDto);
-        String name = giftCertificateRequestInsertDto.getName();
+    public GiftCertificate add(GiftCertificateInsertDto dto) {
+        validate(dto);
+        String name = dto.getName();
         if (giftCertificateRepository.getByName(name) != null) {
             throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
         }
-        GiftCertificate giftCertificateToInsert = giftCertificateRequestInsertDto.toEntity();
-        setTags(giftCertificateToInsert, giftCertificateRequestInsertDto);
+        GiftCertificate giftCertificateToInsert = dto.toEntity();
+        setTags(giftCertificateToInsert, dto);
         Instant now = Instant.now();
         giftCertificateToInsert.setCreateDate(now);
         giftCertificateToInsert.setLastUpdateDate(now);
         GiftCertificate giftCertificate = giftCertificateRepository.insertOrUpdate(giftCertificateToInsert);
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_INSERTED, giftCertificate));
+        log.info(String.format(MESSAGE_INSERTED, giftCertificate));
         return giftCertificate;
     }
 
@@ -85,19 +73,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void remove(Long id) {
         GiftCertificate giftCertificate = check(id);
         giftCertificateRepository.delete(giftCertificate);
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_DELETED, giftCertificate));
+        log.info(String.format(MESSAGE_DELETED, giftCertificate));
     }
 
     @Override
     @Transactional
-    public GiftCertificate update(Long id, GiftCertificateRequestUpdateDto giftCertificateRequestUpdateDto) {
-        validate(giftCertificateRequestUpdateDto);
+    public GiftCertificate update(Long id, GiftCertificateUpdateDto dto) {
+        validate(dto);
         GiftCertificate giftCertificate = check(id);
-        String description = giftCertificateRequestUpdateDto.getDescription();
+        String description = dto.getDescription();
         if (description != null) {
             giftCertificate.setDescription(description);
         }
-        String name = giftCertificateRequestUpdateDto.getName();
+        String name = dto.getName();
         if (name != null) {
             GiftCertificate checkGiftCertificate = giftCertificateRepository.getByName(name);
             if (checkGiftCertificate != null && !checkGiftCertificate.getId().equals(id)) {
@@ -105,18 +93,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
             giftCertificate.setName(name);
         }
-        Double price = giftCertificateRequestUpdateDto.getPrice();
+        Double price = dto.getPrice();
         if (price != null) {
             giftCertificate.setPrice(price);
         }
-        Integer duration = giftCertificateRequestUpdateDto.getDuration();
+        Integer duration = dto.getDuration();
         if (duration != null) {
             giftCertificate.setDuration(duration);
         }
-        setTags(giftCertificate, giftCertificateRequestUpdateDto);
+        setTags(giftCertificate, dto);
         giftCertificate.setLastUpdateDate(Instant.now());
         GiftCertificate updatedGiftCertificate = giftCertificateRepository.insertOrUpdate(giftCertificate);
-        log.info(String.format(MESSAGE_GIFT_CERTIFICATE_UPDATED, updatedGiftCertificate));
+        log.info(String.format(MESSAGE_UPDATED, updatedGiftCertificate));
         return updatedGiftCertificate;
     }
 
@@ -136,26 +124,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
-    private void validate(GiftCertificateRequestDto dto) {
-        Set<ConstraintViolation<GiftCertificateRequestDto>> violations
-                = Validation.buildDefaultValidatorFactory().getValidator().validate(dto);
-        if (violations.size() > 0) {
-            throw new IllegalArgumentException(String.format(ERROR_PARAMS_VIOLATION,
-                    violations.stream()
-                            .map(ConstraintViolation::getMessage)
-                            .collect(Collectors.joining(", "))));
-        }
-    }
-
-    private void setTags(GiftCertificate giftCertificate, GiftCertificateRequestDto giftCertificateRequestDto) {
+    private void setTags(GiftCertificate giftCertificate, GiftCertificateDto giftCertificateRequestDto) {
         Set<String> tagNames = giftCertificateRequestDto.getTags().stream()
-                .map(TagRequestDto::getName)
+                .map(TagDto::getName)
                 .collect(Collectors.toSet());
         Set<Tag> tags = new HashSet<>(tagRepository.getByNames(tagNames));
         Set<String> existingNames = tags.stream().map(Tag::getName).collect(Collectors.toSet());
         tagNames.stream()
                 .filter(name -> !existingNames.contains(name))
-                .forEach(name -> tags.add(new Tag(null, name)));
+                .forEach(name -> tags.add(new Tag(name)));
         giftCertificate.setTags(tags);
     }
 }

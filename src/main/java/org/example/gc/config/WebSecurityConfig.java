@@ -1,4 +1,4 @@
-package org.example.gc;
+package org.example.gc.config;
 
 import org.example.gc.entity.Role;
 import org.springframework.context.annotation.Bean;

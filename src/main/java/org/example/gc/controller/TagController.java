@@ -1,6 +1,6 @@
 package org.example.gc.controller;
 
-import org.example.gc.dto.TagRequestDto;
+import org.example.gc.dto.TagDto;
 import org.example.gc.entity.Tag;
 import org.example.gc.parameters.TagParameters;
 import org.example.gc.service.TagService;
@@ -27,8 +27,8 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addTag(@RequestBody TagRequestDto tagRequestDto) {
-        return new ResponseEntity<>(tagService.add(tagRequestDto), HttpStatus.CREATED);
+    public ResponseEntity<Object> addTag(@RequestBody TagDto dto) {
+        return new ResponseEntity<>(tagService.add(dto), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{tagId}")
