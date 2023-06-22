@@ -9,4 +9,5 @@ import java.util.Set;
 public interface TagRepository extends EntityRepository<Tag> {
     List<Tag> getByNames(Set<String> tags);
     List<Tag> getAll(TagParameters parameters);
+    Tag getMostValuable();
 }

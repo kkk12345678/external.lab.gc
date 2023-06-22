@@ -1,5 +1,6 @@
 package org.example.gc.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.OrderDto;
 import org.example.gc.entity.GiftCertificate;
 import org.example.gc.entity.Order;
@@ -14,11 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private static final String ERROR_NO_SUCH_USER = "There is no user with 'id' = '%d'.";
     private static final String ERROR_NO_SUCH_GIFT_CERTIFICATE = "There is no gift certificate with 'id' = '%d'.";
+    private static final String ERROR_ID_NOT_FOUND =
+            "There is no order with 'id' = '%d'.";
+    private static final String MESSAGE_ORDERS_FOUND =
+            "%d orders were successfully found.";
+    private static final String MESSAGE_NO_ORDER_BY_ID_FOUND =
+            "No order with 'id' = '%d' was found.";
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
@@ -56,5 +65,20 @@ public class OrderServiceImpl implements OrderService {
         order.setSum(giftCertificate.getPrice());
         order.setCreateDate(Instant.now());
         return orderRepository.insertOrUpdate(order);
+    }
+
+    @Override
+    public void remove(Long id) {
+        Order order = check(id);
+        orderRepository.delete(order);
+    }
+
+    private Order check(Long id) {
+        Order order = orderRepository.getById(id);
+        if (order == null) {
+            log.info(String.format(MESSAGE_NO_ORDER_BY_ID_FOUND, id));
+            throw new NoSuchElementException(String.format(ERROR_ID_NOT_FOUND, id));
+        }
+        return order;
     }
 }

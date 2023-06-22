@@ -21,6 +21,11 @@ public class TagController {
         return new ResponseEntity<>(tagService.getAll(tagParameters), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/most-valuable")
+    public ResponseEntity<Object> getMostValuableTag() {
+        return new ResponseEntity<>(tagService.getMostValuable(), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/{tagId}")
     public Tag getTagById(@PathVariable(TAG_ID) Long id) {
         return tagService.getById(id);

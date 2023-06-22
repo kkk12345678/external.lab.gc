@@ -98,13 +98,23 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 predicates.add(criteriaBuilder.like(root.get(parts[0]), String.format(SEARCH_PATTERN, parts[1])));
             });
         }
-        String tagName = giftCertificateParameters.getTagName();
-        if (tagName != null) {
-            In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
-            searchByTagName(tagName).forEach(inClause::value);
-            predicates.add(inClause);
-
+        String[] tagNames = giftCertificateParameters.getTagNames();
+        //And condition
+        if (tagNames != null) {
+            Arrays.stream(tagNames).forEach(tagName -> {
+                In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
+                searchByTagName(tagName).forEach(inClause::value);
+                predicates.add(inClause);
+            });
         }
+        //Or condition
+        /*
+        if (tagNames != null) {
+            In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
+            Arrays.stream(tagNames).forEach(tagName -> searchByTagName(tagName).forEach(inClause::value));
+            predicates.add(inClause);
+        }
+        */
         Predicate[] array = new Predicate[predicates.size()];
         predicates.toArray(array);
         criteriaQuery.where(array);

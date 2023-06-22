@@ -11,4 +11,5 @@ public interface TagService {
     Tag add(TagDto tagRequestDto);
     void remove(Long id);
     Tag getById(Long id);
+    Tag getMostValuable();
 }

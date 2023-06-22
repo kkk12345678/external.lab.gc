@@ -8,5 +8,5 @@ import lombok.Setter;
 public class GiftCertificateParameters extends Parameters {
     private String[] sort;
     private String[] search;
-    private String tagName;
+    private String[] tagNames;
 }

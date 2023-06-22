@@ -16,6 +16,17 @@ import java.util.Set;
 public class TagRepositoryImpl implements TagRepository {
     private static final String JPQL_BY_NAME = "select t from Tag t where t.name = :name";
     private static final String JPQL_ALL = "from Tag";
+    private static final String SQL_MOST_VALUABLE = """
+            select * from tags
+            where tag_id in (
+                select tag_id from gift_certificate_tags
+            	where gift_certificate_id in (
+            	    select gift_certificate_id from orders
+            	    where user_id = (select user_id from orders order by sum limit 1)
+            	)
+            )
+            group by tag_id order by count(tag_id) desc limit 1;
+            """;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -24,6 +35,16 @@ public class TagRepositoryImpl implements TagRepository {
         TypedQuery<Tag> query = entityManager.createQuery(JPQL_ALL, Tag.class);
         setPagination(query, parameters);
         return query.getResultList();
+    }
+
+    @Override
+    public Tag getMostValuable() {
+        try {
+            Query query = entityManager.createNativeQuery(SQL_MOST_VALUABLE, Tag.class);
+            return (Tag) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override

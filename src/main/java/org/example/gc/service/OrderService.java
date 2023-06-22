@@ -10,4 +10,5 @@ public interface OrderService {
     List<Order> getAll(OrderParameters orderParameters);
     Order getById(Long id);
     Order add(OrderDto dto);
+    void remove(Long id);
 }

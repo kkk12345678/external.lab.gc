@@ -1,7 +1,9 @@
 package org.example.gc.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Set;
@@ -11,6 +13,8 @@ import java.util.Set;
         name = "gift_certificates",
         uniqueConstraints = {@UniqueConstraint(columnNames = "gift_certificate_name")})
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class GiftCertificate {
     @Id
     @Column(name = "gift_certificate_id")

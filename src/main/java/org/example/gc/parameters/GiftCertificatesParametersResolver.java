@@ -50,7 +50,7 @@ public class GiftCertificatesParametersResolver
                 webRequest.getParameter(PARAM_PAGE));
         setSort(giftCertificateParameters, webRequest.getParameterValues(PARAM_SORT));
         setSearch(giftCertificateParameters, webRequest.getParameterValues(PARAM_SEARCH));
-        giftCertificateParameters.setTagName(webRequest.getParameter(PARAM_TAG_NAME));
+        giftCertificateParameters.setTagNames(webRequest.getParameterValues(PARAM_TAG_NAME));
         return giftCertificateParameters;
     }
 

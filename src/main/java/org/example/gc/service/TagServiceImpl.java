@@ -63,6 +63,13 @@ public class TagServiceImpl extends AbstractService implements TagService {
         return tag;
     }
 
+    @Override
+    public Tag getMostValuable() {
+        Tag tag = tagRepository.getMostValuable();
+        log.info(String.format(MESSAGE_FOUND, tag));
+        return tag;
+    }
+
     private Tag check(Long id) {
         Tag tag = tagRepository.getById(id);
         if (tag == null) {
