@@ -2,7 +2,6 @@ package org.example.gc.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.example.gc.dto.UserDto;
 
 @Entity
 @Table(
@@ -24,8 +23,4 @@ public class User {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
-
-    public UserDto toUserDto() {
-        return new UserDto(name, role.getName(), password);
-    }
 }

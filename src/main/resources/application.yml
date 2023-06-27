@@ -8,3 +8,10 @@ spring:
     username: root
     password: x2Aht9LND6g3
     driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 493635626580-cbpq8562jbcnqn7kt69u2nauul1jc9ge.apps.googleusercontent.com
+            client-secret: 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

@@ -1,5 +1,6 @@
 package org.example.gc.service;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.OrderDto;
 import org.example.gc.entity.GiftCertificate;
@@ -11,7 +12,6 @@ import org.example.gc.repository.OrderRepository;
 import org.example.gc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,8 +37,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getAll(OrderParameters orderParameters) {
-        //TODO parameters
-        return orderRepository.getAll(orderParameters);
+        List<Order> orders = orderRepository.getAll(orderParameters);
+        log.info(String.format(MESSAGE_ORDERS_FOUND, orders.size()));
+        return orders;
     }
 
     @Override

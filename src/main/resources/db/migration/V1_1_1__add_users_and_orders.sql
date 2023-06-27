@@ -10,7 +10,7 @@ CREATE TABLE users (
 	user_id INT AUTO_INCREMENT PRIMARY KEY,
     user_name VARCHAR(255) UNIQUE NOT NULL,
     role_id INT NOT NULL,
-    user_password VARCHAR(16),
+    user_password VARCHAR(60),
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
@@ -28,3 +28,4 @@ CREATE TABLE orders (
 
 INSERT INTO roles(role_id, role_name) VALUES(default, 'admin');
 INSERT INTO roles(role_id, role_name) VALUES(default, 'user');
+INSERT INTO users(user_id, user_name, role_id) VALUES(default, 'Administrator', 1, "$2a$10$hEM6cicRNgQ7R70FFDVxzumZY5QaeLaN58hlm4q4kAKHd/cMfzyQy");

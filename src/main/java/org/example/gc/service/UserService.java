@@ -1,6 +1,5 @@
 package org.example.gc.service;
 
-
 import org.example.gc.dto.UserDto;
 import org.example.gc.entity.User;
 import org.example.gc.parameters.UserParameters;
@@ -13,4 +12,6 @@ public interface UserService {
     void remove(Long id);
     User getById(Long id);
     User update(Long id, UserDto userDto);
+    String login(UserDto dto);
+    String signup(UserDto dto);
 }
