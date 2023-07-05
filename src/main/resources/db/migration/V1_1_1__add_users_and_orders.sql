@@ -28,4 +28,5 @@ CREATE TABLE orders (
 
 INSERT INTO roles(role_id, role_name) VALUES(default, 'admin');
 INSERT INTO roles(role_id, role_name) VALUES(default, 'user');
+
 INSERT INTO users(user_id, user_name, role_id) VALUES(default, 'Administrator', 1, "$2a$10$hEM6cicRNgQ7R70FFDVxzumZY5QaeLaN58hlm4q4kAKHd/cMfzyQy");

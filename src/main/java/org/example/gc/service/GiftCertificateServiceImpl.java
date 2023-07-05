@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.*;
 import org.example.gc.entity.GiftCertificate;
+import org.example.gc.exception.AlreadyExistsException;
 import org.example.gc.parameters.GiftCertificateParameters;
 import org.example.gc.entity.Tag;
 import org.example.gc.repository.GiftCertificateRepository;
@@ -89,7 +90,7 @@ public class GiftCertificateServiceImpl extends AbstractService implements GiftC
         if (name != null) {
             GiftCertificate checkGiftCertificate = giftCertificateRepository.getByName(name);
             if (checkGiftCertificate != null && !checkGiftCertificate.getId().equals(id)) {
-                throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
+                throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
             }
             giftCertificate.setName(name);
         }

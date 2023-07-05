@@ -1,17 +1,19 @@
 package org.example.gc.service;
 
 import org.example.gc.dto.UserDto;
+import org.example.gc.dto.UserLoginDto;
+import org.example.gc.dto.UserSignupDto;
 import org.example.gc.entity.User;
 import org.example.gc.parameters.UserParameters;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAll(UserParameters parameters);
-    User add(UserDto userDto);
+    List<UserDto> getAll(UserParameters parameters);
+    UserDto add(UserSignupDto dto);
     void remove(Long id);
-    User getById(Long id);
-    User update(Long id, UserDto userDto);
-    String login(UserDto dto);
-    String signup(UserDto dto);
+    UserDto getById(Long id);
+    UserDto update(Long id, UserSignupDto dto);
+    String login(UserLoginDto dto);
+    String signup(UserSignupDto dto);
 }

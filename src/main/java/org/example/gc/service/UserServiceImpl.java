@@ -3,17 +3,21 @@ package org.example.gc.service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.UserDto;
-import org.example.gc.entity.Role;
+import org.example.gc.dto.UserLoginDto;
+import org.example.gc.dto.UserSignupDto;
 import org.example.gc.entity.User;
+import org.example.gc.exception.AlreadyExistsException;
+import org.example.gc.exception.NoSuchUserException;
 import org.example.gc.parameters.UserParameters;
 import org.example.gc.repository.RoleRepository;
 import org.example.gc.repository.UserRepository;
-import org.example.gc.util.JwtTokenProvider;
+import org.example.gc.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,27 +51,27 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public List<User> getAll(UserParameters parameters) {
-        List<User> users = userRepository.getAll(parameters);
+    public List<UserDto> getAll(UserParameters parameters) {
+        List<UserDto> users = userRepository.getAll(parameters)
+                .stream().map(User::toDto)
+                .collect(Collectors.toList());
         log.info(String.format(MESSAGE_USERS_FOUND, users.size()));
         return users;
     }
 
     @Override
     @Transactional
-    public User add(UserDto userDto) {
-        validate(userDto);
-        String name = userDto.getName();
+    public UserDto add(UserSignupDto dto) {
+        validate(dto);
+        String name = dto.getName();
         if (userRepository.getByName(name) != null) {
-            throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
+            throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
         }
-        User user = new User();
-        user.setName(name);
-        user.setRole(roleRepository.getByName("user"));
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        User user = new User(null, name, passwordEncoder.encode(dto.getPassword()), roleRepository.getByName("user"));
         user = userRepository.insertOrUpdate(user);
-        log.info(String.format(MESSAGE_INSERTED, user));
-        return user;
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getRole());
+        log.info(String.format(MESSAGE_INSERTED, userDto));
+        return userDto;
     }
 
     @Override
@@ -79,57 +83,48 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     @Override
-    public User getById(Long id) {
-        User user = check(id);
-        log.info(String.format(MESSAGE_FOUND, user));
-        return user;
+    public UserDto getById(Long id) {
+        UserDto userDto = check(id).toDto();
+        log.info(String.format(MESSAGE_FOUND, userDto));
+        return userDto;
     }
 
     @Override
     @Transactional
-    public User update(Long id, UserDto userDto) {
+    public UserDto update(Long id, UserSignupDto dto) {
         User user = check(id);
-        String name = userDto.getName();
-        validate(userDto);
+        String name = user.getName();
+        validate(dto);
         User storedUser = userRepository.getByName(name);
         if (storedUser != null && !storedUser.getId().equals(user.getId())) {
-            throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
+            throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
         }
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setName(name);
-        user = userRepository.insertOrUpdate(user);
-        log.info(String.format(MESSAGE_UPDATED, user));
-        return user;
+        UserDto userDto = userRepository.insertOrUpdate(user).toDto();
+        log.info(String.format(MESSAGE_UPDATED, userDto));
+        return userDto;
     }
 
     @Override
-    public String login(UserDto dto) {
+    public String login(UserLoginDto dto) {
         User user = userRepository.getByName(dto.getName());
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException(ERROR_INVALID_CREDENTIALS);
+            throw new NoSuchUserException(ERROR_INVALID_CREDENTIALS);
         }
-        try {
-            dto.setPassword(user.getPassword());
-            return jwtTokenProvider.createToken(dto.getName(), user.getRole());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return jwtTokenProvider.createToken(user.toDto());
     }
 
     @Override
     @Transactional
-    public String signup(UserDto dto) {
+    public String signup(UserSignupDto dto) {
         String name = dto.getName();
         if (userRepository.getByName(name) != null) {
-            throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
+            throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, name));
         }
-        User user = new User();
-        user.setName(name);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        Role role = roleRepository.getByName("user");
-        user.setRole(role);
+        User user = new User(null, name, passwordEncoder.encode(dto.getPassword()), roleRepository.getByName("user"));
         userRepository.insertOrUpdate(user);
-        return jwtTokenProvider.createToken(name, role);
+        return jwtTokenProvider.createToken(user.toDto());
     }
 
     private User check(Long id) {

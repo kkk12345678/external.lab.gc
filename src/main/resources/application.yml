@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/gc
     username: root
-    password: x2Aht9LND6g3
+    password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     oauth2:
@@ -22,3 +22,7 @@ spring:
           facebook:
             client-id: facebook-id
             client-secret: facebook-secret
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET}

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.gc.entity.GiftCertificate;
 
 import java.util.Set;
 
@@ -20,17 +19,5 @@ public class GiftCertificateUpdateDto implements GiftCertificateDto {
     private Double price;
     @Positive(message = "Gift certificate parameter 'duration' must be positive integer.")
     private Integer duration;
-
     private Set<TagDto> tags;
-
-
-    @Override
-    public GiftCertificate toEntity() {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setName(name);
-        giftCertificate.setDescription(description);
-        giftCertificate.setPrice(price);
-        giftCertificate.setDuration(duration);
-        return giftCertificate;
-    }
 }

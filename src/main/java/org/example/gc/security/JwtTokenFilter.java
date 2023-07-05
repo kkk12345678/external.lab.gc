@@ -1,28 +1,27 @@
-package org.example.gc.util;
+package org.example.gc.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-public class JwtTokenFilter extends GenericFilterBean {
+public class JwtTokenFilter extends HttpFilter {
     private final JwtTokenProvider jwtTokenProvider;
     public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
+    public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
             throws IOException, ServletException {
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) req);
-        HttpServletResponse httpServletResponse = (HttpServletResponse) res;
+        String token = jwtTokenProvider.resolveToken(req);
         if (token != null) {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
@@ -30,9 +29,9 @@ public class JwtTokenFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (IllegalStateException e) {
-                 httpServletResponse.setStatus(403);
+                res.setStatus(403);
             }
         }
-        filterChain.doFilter(req, httpServletResponse);
+        filterChain.doFilter(req, res);
     }
 }

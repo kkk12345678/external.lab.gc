@@ -6,6 +6,7 @@ import org.example.gc.dto.OrderDto;
 import org.example.gc.entity.GiftCertificate;
 import org.example.gc.entity.Order;
 import org.example.gc.entity.User;
+import org.example.gc.exception.NoSuchUserException;
 import org.example.gc.parameters.OrderParameters;
 import org.example.gc.repository.GiftCertificateRepository;
 import org.example.gc.repository.OrderRepository;
@@ -53,14 +54,14 @@ public class OrderServiceImpl implements OrderService {
         Long userId = dto.getUserId();
         User user = userRepository.getById(dto.getUserId());
         if (user == null) {
-            throw new IllegalArgumentException(String.format(ERROR_NO_SUCH_USER, userId));
+            throw new NoSuchUserException(String.format(ERROR_NO_SUCH_USER, userId));
         }
         Long giftCertificateId = dto.getGiftCertificateId();
         GiftCertificate giftCertificate = giftCertificateRepository.getById(giftCertificateId);
         if (giftCertificate == null) {
-            throw new IllegalArgumentException(String.format(ERROR_NO_SUCH_GIFT_CERTIFICATE, giftCertificateId));
+            throw new NoSuchElementException(String.format(ERROR_NO_SUCH_GIFT_CERTIFICATE, giftCertificateId));
         }
-        Order order = dto.toEntity();
+        Order order = new Order();
         order.setUser(user);
         order.setGiftCertificate(giftCertificate);
         order.setSum(giftCertificate.getPrice());

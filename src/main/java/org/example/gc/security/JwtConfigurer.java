@@ -1,4 +1,4 @@
-package org.example.gc.util;
+package org.example.gc.security;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
