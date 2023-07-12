@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Entity
 @Table(
         name = "roles",
@@ -20,8 +18,4 @@ public class Role {
 
     @Column(name = "role_name", nullable = false)
     private String name;
-
-    public Role(String name) {
-        this.name = name;
-    }
 }

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.dto.TagDto;
 import org.example.gc.entity.Tag;
+import org.example.gc.exception.AlreadyExistsException;
 import org.example.gc.parameters.TagParameters;
 import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,11 @@ public class TagServiceImpl extends AbstractService implements TagService {
         validate(dto);
         String tagName = dto.getName();
         if (tagRepository.getByName(tagName) == null) {
-            Tag tag = tagRepository.insertOrUpdate(dto.toEntity());
+            Tag tag = tagRepository.insertOrUpdate(new Tag(dto.getName()));
             log.info(String.format(MESSAGE_INSERTED, tag));
             return tag;
         } else {
-            throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
+            throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
         }
     }
 

@@ -1,7 +1,9 @@
 package org.example.gc.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.gc.dto.UserDto;
 
 @Entity
@@ -9,6 +11,8 @@ import org.example.gc.dto.UserDto;
         name = "users",
         uniqueConstraints = {@UniqueConstraint(columnNames = "user_name")})
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @Column(name = "user_id", nullable = false)
@@ -25,7 +29,7 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    public UserDto toUserDto() {
-        return new UserDto(name, role.getName(), password);
+    public UserDto toDto() {
+        return new UserDto(id, name, role);
     }
 }

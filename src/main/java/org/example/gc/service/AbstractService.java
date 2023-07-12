@@ -1,6 +1,7 @@
 package org.example.gc.service;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import org.example.gc.dto.EntityDto;
 import org.example.gc.dto.TagDto;
@@ -28,10 +29,7 @@ public abstract class AbstractService {
         Set<ConstraintViolation<EntityDto<?>>> violations
                 = Validation.buildDefaultValidatorFactory().getValidator().validate(dto);
         if (violations.size() > 0) {
-            throw new IllegalArgumentException(String.format(ERROR_PARAMS_VIOLATION,
-                    violations.stream()
-                            .map(ConstraintViolation::getMessage)
-                            .collect(Collectors.joining(", "))));
+            throw new ConstraintViolationException(violations);
         }
     }
 }
