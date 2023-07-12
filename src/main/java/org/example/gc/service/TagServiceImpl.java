@@ -1,70 +1,82 @@
 package org.example.gc.service;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import org.example.gc.dao.TagDao;
-import org.example.gc.dao.TagParametersHandler;
-import org.example.gc.dto.TagRequestDto;
-import org.example.gc.dto.TagResponseDto;
-import org.example.gc.dao.ParametersHandler;
-import org.example.gc.model.Tag;
-import org.example.gc.model.TagParameters;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.example.gc.dto.TagDto;
+import org.example.gc.entity.Tag;
+import org.example.gc.exception.AlreadyExistsException;
+import org.example.gc.parameters.TagParameters;
+import org.example.gc.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
-public class TagServiceImpl implements TagService {
-    private static final String ERROR_PARAMS_VIOLATION = "Tag parameters have the following violations : [%s]";
-    private static final String ERROR_NAME_ALREADY_EXISTS = "Tag with name '%s' already exists.";
-    private static final String ERROR_ID_NOT_FOUND = "There is no tag with 'id' = '%d'.";
+@Slf4j
+public class TagServiceImpl extends AbstractService implements TagService {
+    private static final String ERROR_NAME_ALREADY_EXISTS =
+            "Tag with name '%s' already exists.";
+    private static final String ERROR_ID_NOT_FOUND =
+            "There is no tag with 'id' = '%d'.";
+    private static final String MESSAGE_TAGS_FOUND =
+            "%d tags were successfully found.";
+    private static final String MESSAGE_NO_TAG_BY_ID_FOUND =
+            "No tag with 'id' = '%d' was found.";
+
     @Autowired
-    private TagDao tagDao;
+    private TagRepository tagRepository;
 
     @Override
-    public Collection<TagResponseDto> getAll(TagParameters tagParameters) {
-        return tagDao.getAll(new TagParametersHandler(tagParameters))
-                .stream()
-                .map(TagResponseDto::fromEntityToDto)
-                .collect(Collectors.toList());
+    public List<Tag> getAll(TagParameters tagParameters) {
+        List<Tag> tags = tagRepository.getAll(tagParameters);
+        log.info(String.format(MESSAGE_TAGS_FOUND, tags.size()));
+        return tags;
     }
 
     @Override
-    public long add(TagRequestDto tagRequestDto) {
-        Set<ConstraintViolation<TagRequestDto>> violations
-                = Validation.buildDefaultValidatorFactory().getValidator().validate(tagRequestDto);
-        if (violations.size() > 0) {
-            throw new IllegalArgumentException(String.format(ERROR_PARAMS_VIOLATION,
-                    violations.stream()
-                            .map(ConstraintViolation::getMessage)
-                            .collect(Collectors.joining(", "))));
-        }
-        String tagName = tagRequestDto.getName();
-        if (tagDao.getByName(tagName) == null) {
-            return tagDao.insert(tagRequestDto.toEntity());
+    @Transactional
+    public Tag add(TagDto dto) {
+        validate(dto);
+        String tagName = dto.getName();
+        if (tagRepository.getByName(tagName) == null) {
+            Tag tag = tagRepository.insertOrUpdate(new Tag(dto.getName()));
+            log.info(String.format(MESSAGE_INSERTED, tag));
+            return tag;
         } else {
-            throw new IllegalArgumentException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
+            throw new AlreadyExistsException(String.format(ERROR_NAME_ALREADY_EXISTS, tagName));
         }
     }
 
     @Override
-    public void remove(long id) {
-        if (tagDao.getById(id) == null) {
-            throw new NoSuchElementException(String.format(ERROR_ID_NOT_FOUND, id));
-        }
-        tagDao.delete(id);
+    @Transactional
+    public void remove(Long id) {
+        Tag tag = check(id);
+        tagRepository.delete(tag);
+        log.info(String.format(MESSAGE_DELETED, tag));
     }
 
     @Override
-    public TagResponseDto getById(long id) {
-        Tag tag = tagDao.getById(id);
+    public Tag getById(Long id) {
+        Tag tag = check(id);
+        log.info(String.format(MESSAGE_FOUND, tag));
+        return tag;
+    }
+
+    @Override
+    public Tag getMostValuable() {
+        Tag tag = tagRepository.getMostValuable();
+        log.info(String.format(MESSAGE_FOUND, tag));
+        return tag;
+    }
+
+    private Tag check(Long id) {
+        Tag tag = tagRepository.getById(id);
         if (tag == null) {
+            log.info(String.format(MESSAGE_NO_TAG_BY_ID_FOUND, id));
             throw new NoSuchElementException(String.format(ERROR_ID_NOT_FOUND, id));
         }
-        return TagResponseDto.fromEntityToDto(tag);
+        return tag;
     }
 }
