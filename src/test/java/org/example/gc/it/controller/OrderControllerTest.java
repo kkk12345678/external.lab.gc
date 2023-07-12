@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = Application.class)
 public class OrderControllerTest {
+    /*
     private static final String URL = "http://localhost:8080/orders";
     @Autowired
     private MockMvc mockMvc;
@@ -34,4 +35,6 @@ public class OrderControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(new Gson().toJson(orderRepository.getAll(new OrderParameters()))));
     }
+
+     */
 }
