@@ -1,6 +1,7 @@
 package org.example.gc.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
         uniqueConstraints = {@UniqueConstraint(columnNames = "role_name")})
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Role {
     @Id
     @Column(name = "role_id")

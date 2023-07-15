@@ -1,9 +1,7 @@
 package org.example.gc.dto;
 
-import org.example.gc.entity.GiftCertificate;
-
 import java.util.Set;
 
-public interface GiftCertificateDto extends EntityDto<GiftCertificate> {
+public interface GiftCertificateDto extends EntityDto {
     Set<TagDto> getTags();
 }
