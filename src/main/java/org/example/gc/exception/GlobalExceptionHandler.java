@@ -73,16 +73,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.UNAUTHORIZED);
     }
 
-    /*
-
-    @ExceptionHandler(IllegalStateException.class)
-    protected ResponseEntity<Object> handleIllegalStateException(
-            Exception ex, WebRequest request) {
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<Object> handleIllegalArgumentException(Exception e) {
+        return new ResponseEntity<>(
+                new ExceptionResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "invalid_parameter",
+                        e.getMessage()),
+                HttpStatus.BAD_REQUEST);
     }
-
-
-     */
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleOtherException(Exception e) {

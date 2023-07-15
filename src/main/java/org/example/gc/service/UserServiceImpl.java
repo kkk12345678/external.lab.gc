@@ -17,17 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserServiceImpl extends AbstractService implements UserService {
-    private static final String ERROR_PARAMS_VIOLATION =
-            "User parameters have the following violations : [%s]";
     private static final String ERROR_NAME_ALREADY_EXISTS =
             "User with name '%s' already exists.";
-    private static final String ERROR_ROLE_DOES_NOT_EXISTS =
-            "There is no role with name '%s'.";
     private static final String ERROR_ID_NOT_FOUND =
             "There is no user with 'id' = '%d'.";
     private static final String MESSAGE_USERS_FOUND =
@@ -36,10 +31,6 @@ public class UserServiceImpl extends AbstractService implements UserService {
             "No user with 'id' = '%d' was found.";
     private static final String ERROR_INVALID_CREDENTIALS =
             "User's credentials are invalid.";
-    private static final String ERROR_NOT_FOUND =
-            "User with name '%s' was not found.";
-    private static final String ERROR_INVALID_PASSWORD =
-            "Invalid password.";
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -52,9 +43,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
 
     @Override
     public List<UserDto> getAll(UserParameters parameters) {
-        List<UserDto> users = userRepository.getAll(parameters)
-                .stream().map(User::toDto)
-                .collect(Collectors.toList());
+        List<UserDto> users = userRepository.getAll(parameters).stream()
+                .map(User::toDto).toList();
         log.info(String.format(MESSAGE_USERS_FOUND, users.size()));
         return users;
     }

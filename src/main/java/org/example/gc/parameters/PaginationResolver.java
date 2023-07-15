@@ -21,27 +21,35 @@ public interface PaginationResolver {
         } else if (limit == null || limit.isBlank()) {
             throw new IllegalArgumentException(ERROR_LIMIT_NOT_SPECIFIED);
         } else {
-            try {
-                int l = Integer.parseInt(limit);
-                if (l < 1) {
-                    throw new IllegalArgumentException(ERROR_LIMIT_NOT_POSITIVE);
-                }
-                parameters.setLimit(l);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(ERROR_LIMIT_NOT_INTEGER);
+            setLimit(parameters, limit);
+            setPage(parameters, page);
+        }
+    }
+
+    private void setLimit(Parameters parameters, String limit) {
+        try {
+            int l = Integer.parseInt(limit);
+            if (l < 1) {
+                throw new IllegalArgumentException(ERROR_LIMIT_NOT_POSITIVE);
             }
-            if (page == null || page.isBlank()) {
-                parameters.setPage(null);
-            } else {
-                try {
-                    int p = Integer.parseInt(page);
-                    if (p < 1) {
-                        throw new IllegalArgumentException(ERROR_PAGE_NOT_POSITIVE);
-                    }
-                    parameters.setPage(p);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(ERROR_PAGE_NOT_INTEGER);
+            parameters.setLimit(l);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(ERROR_LIMIT_NOT_INTEGER);
+        }
+    }
+
+    private void setPage(Parameters parameters, String page) {
+        if (page == null || page.isBlank()) {
+            parameters.setPage(null);
+        } else {
+            try {
+                int p = Integer.parseInt(page);
+                if (p < 1) {
+                    throw new IllegalArgumentException(ERROR_PAGE_NOT_POSITIVE);
                 }
+                parameters.setPage(p);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(ERROR_PAGE_NOT_INTEGER);
             }
         }
     }

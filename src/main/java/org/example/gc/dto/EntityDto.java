@@ -1,3 +1,3 @@
 package org.example.gc.dto;
 
-public interface EntityDto<T> {}
+public interface EntityDto {}

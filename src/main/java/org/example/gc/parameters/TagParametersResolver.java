@@ -17,8 +17,7 @@ public class TagParametersResolver
     public Object resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory)
-            throws Exception {
+                                  WebDataBinderFactory binderFactory) {
 
         TagParameters tagParameters = new TagParameters();
         String limit = webRequest.getParameter(PARAM_LIMIT);
