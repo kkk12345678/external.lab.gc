@@ -4,14 +4,12 @@ import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gc.security.JwtConfigurer;
 import org.example.gc.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,17 +19,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackages = {"org.example.gc"})
 @Slf4j
 public class SecurityConfiguration {
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration)
@@ -45,7 +37,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DaoAuthenticationProvider authProvider() {
+    public DaoAuthenticationProvider authProvider(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
@@ -54,7 +46,7 @@ public class SecurityConfiguration {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(l -> l.logoutUrl("/users/logout")
@@ -75,17 +67,4 @@ public class SecurityConfiguration {
                 .apply(new JwtConfigurer(jwtTokenProvider));
         return http.build();
     }
-
-/*
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(r -> r.anyRequest().authenticated())
-                .oauth2ResourceServer(c -> c.jwt(Customizer.withDefaults()))
-                .oauth2Login(Customizer.withDefaults());
-        return http.build();
-    }
-
- */
 }

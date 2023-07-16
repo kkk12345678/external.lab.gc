@@ -3,7 +3,6 @@ package org.example.gc.service;
 import org.example.gc.dto.UserDto;
 import org.example.gc.dto.UserLoginDto;
 import org.example.gc.dto.UserSignupDto;
-import org.example.gc.entity.User;
 import org.example.gc.parameters.UserParameters;
 
 import java.util.List;

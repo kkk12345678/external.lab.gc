@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -82,7 +81,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .where(criteriaBuilder.like(root.get(FIELD_TAGS).get(FIELD_NAME),
                         String.format(SEARCH_PATTERN, tagName)));
         TypedQuery<GiftCertificate> query = entityManager.createQuery(criteriaQuery);
-        return query.getResultList().stream().map(GiftCertificate::getId).collect(Collectors.toList());
+        return query.getResultList().stream().map(GiftCertificate::getId).toList();
     }
 
     private void setSearch(GiftCertificateParameters giftCertificateParameters,
@@ -99,7 +98,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             });
         }
         String[] tagNames = giftCertificateParameters.getTagNames();
-        //And condition
         if (tagNames != null) {
             Arrays.stream(tagNames).forEach(tagName -> {
                 In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
@@ -107,14 +105,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 predicates.add(inClause);
             });
         }
-        //Or condition
-        /*
-        if (tagNames != null) {
-            In<Long> inClause = criteriaBuilder.in(root.get(FIELD_ID));
-            Arrays.stream(tagNames).forEach(tagName -> searchByTagName(tagName).forEach(inClause::value));
-            predicates.add(inClause);
-        }
-        */
         Predicate[] array = new Predicate[predicates.size()];
         predicates.toArray(array);
         criteriaQuery.where(array);
@@ -127,22 +117,26 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         String[] sort = giftCertificateParameters.getSort();
         if (sort != null && sort.length > 0) {
             List<Order> orders = new ArrayList<>();
-            Arrays.stream(sort).forEach(s -> {
-                String[] parts = s.split(SPLIT_REGEX);
-                if (parts[0].equals(FIELD_NAME) && parts[1].equals(SORT_ASC)) {
-                    orders.add(criteriaBuilder.asc(root.get(FIELD_NAME)));
-                }
-                if (parts[0].equals(FIELD_NAME) && parts[1].equals(SORT_DESC)) {
-                    orders.add(criteriaBuilder.desc(root.get(FIELD_NAME)));
-                }
-                if (parts[0].equals(PARAM_DATE) && parts[1].equals(SORT_ASC)) {
-                    orders.add(criteriaBuilder.asc(root.get(FIELD_DATE)));
-                }
-                if (parts[0].equals(PARAM_DATE) && parts[1].equals(SORT_DESC)) {
-                    orders.add(criteriaBuilder.desc(root.get(FIELD_DATE)));
-                }
-            });
+            Arrays.stream(sort).forEach(s -> setOrders(s, orders, criteriaBuilder, root));
             criteriaQuery.orderBy(orders);
+        }
+    }
+
+    private static void setOrders(String s, List<Order> orders,
+                                  CriteriaBuilder criteriaBuilder,
+                                  Root<GiftCertificate> root) {
+        String[] parts = s.split(SPLIT_REGEX);
+        if (parts[0].equals(FIELD_NAME) && parts[1].equals(SORT_ASC)) {
+            orders.add(criteriaBuilder.asc(root.get(FIELD_NAME)));
+        }
+        if (parts[0].equals(FIELD_NAME) && parts[1].equals(SORT_DESC)) {
+            orders.add(criteriaBuilder.desc(root.get(FIELD_NAME)));
+        }
+        if (parts[0].equals(PARAM_DATE) && parts[1].equals(SORT_ASC)) {
+            orders.add(criteriaBuilder.asc(root.get(FIELD_DATE)));
+        }
+        if (parts[0].equals(PARAM_DATE) && parts[1].equals(SORT_DESC)) {
+            orders.add(criteriaBuilder.desc(root.get(FIELD_DATE)));
         }
     }
 }

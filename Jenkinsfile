@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     stages {
-	stage('Build') {
-		steps {
-			bat "./gradlew build"
-		}
-	}
+
         stage('Scan with SonarQube') {
             steps {
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'SonarQubeToken') {
@@ -20,6 +16,7 @@ pipeline {
 			    bat "./gradlew jacocoTestReport"          
 			    publishHTML (target: [reportDir: 'build/reports/jacoco/test/html', reportFiles: 'index.html', reportName: "JaCoCo Report"])          
 			    bat "./gradlew jacocoTestCoverageVerification"     
+
 			}
         }
     }
