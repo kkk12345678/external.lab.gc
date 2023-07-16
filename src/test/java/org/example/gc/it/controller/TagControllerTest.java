@@ -2,9 +2,8 @@ package org.example.gc.it.controller;
 
 import com.google.gson.Gson;
 import org.example.gc.Application;
-import org.example.gc.parameters.OrderParameters;
 import org.example.gc.parameters.TagParameters;
-import org.example.gc.repository.OrderRepository;
+import org.example.gc.repository.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,21 +19,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = Application.class)
-public class OrderControllerTest {
-    /*
-    private static final String URL = "http://localhost:8080/orders";
+class TagControllerTest {
+    private static final String URL = "http://gc-1.eu-central-1.elasticbeanstalk.com/tags";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private OrderRepository orderRepository;
+    private TagRepository tagRepository;
 
     @Test
     void getAllOrdersTest() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(new Gson().toJson(orderRepository.getAll(new OrderParameters()))));
+                .andExpect(content().string(new Gson().toJson(tagRepository.getAll(new TagParameters()))));
     }
-
-     */
 }

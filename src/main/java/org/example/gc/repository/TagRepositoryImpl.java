@@ -19,12 +19,10 @@ public class TagRepositoryImpl implements TagRepository {
     private static final String SQL_MOST_VALUABLE = """
             select * from tags
             where tag_id in (
-                select tag_id from gift_certificate_tags
-            	where gift_certificate_id in (
-            	    select gift_certificate_id from orders
-            	    where user_id = (select user_id from orders order by sum limit 1)
-            	)
-            )
+            select tag_id from gift_certificate_tags
+            where gift_certificate_id in (
+            select gift_certificate_id from orders
+            where user_id = (select user_id from orders order by sum limit 1)))
             group by tag_id order by count(tag_id) desc limit 1;
             """;
     @PersistenceContext

@@ -5,7 +5,7 @@ pipeline {
         stage  ('Scan using Gradle') {
             steps {
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'SonarQubeToken') {
-                    sh "./gradlew sonarqube"
+                    bat "./gradlew sonar"
                 }
             }
         }
