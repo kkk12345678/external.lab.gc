@@ -55,6 +55,13 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+sonar {
+  properties {
+    property("sonar.login", "admin")
+    property("sonar.password", "admin")
+  }
+}
+
 test {
 	finalizedBy jacocoTestReport
 }
