@@ -10,14 +10,14 @@ pipeline {
                 }
             }
         }
-
-        stage("Code coverage") {     
-	        steps {          
-			    bat "./gradlew jacocoTestReport"          
-			    
-			    bat "./gradlew jacocoTestCoverageVerification"     
-
-			}
+    }
+    post {
+        success {
+            jacoco(
+                execPattern: '**/build/jacoco/*.exec',
+                classPattern: '**/build/classes/java/main',
+                sourcePattern: '**/src/main'
+            )
         }
     }
 }
