@@ -2,7 +2,12 @@ pipeline {
     agent any
 
     stages {
-        stage  ('Scan with SonarQube') {
+	stage('Build') {
+		steps {
+			bat "./gradlew build"
+		}
+	}
+        stage('Scan with SonarQube') {
             steps {
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'SonarQubeToken') {
                     bat "./gradlew sonar"
