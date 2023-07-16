@@ -19,11 +19,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.io.Serializable;
+
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackages = {"org.example.gc"})
 @Slf4j
-public class SecurityConfiguration {
+public class SecurityConfiguration implements Serializable {
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration)

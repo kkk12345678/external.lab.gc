@@ -9,11 +9,12 @@ import org.example.gc.entity.Tag;
 import org.example.gc.parameters.TagParameters;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 @Repository
-public class TagRepositoryImpl implements TagRepository {
+public class TagRepositoryImpl implements TagRepository, Serializable {
     private static final String JPQL_BY_NAME = "select t from Tag t where t.name = :name";
     private static final String JPQL_ALL = "from Tag";
     private static final String SQL_MOST_VALUABLE = """
@@ -26,7 +27,7 @@ public class TagRepositoryImpl implements TagRepository {
             group by tag_id order by count(tag_id) desc limit 1;
             """;
     @PersistenceContext
-    private EntityManager entityManager;
+    private transient EntityManager entityManager;
 
     @Override
     public List<Tag> getAll(TagParameters parameters) {

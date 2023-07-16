@@ -10,13 +10,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
+
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService, Serializable {
     private static final String ERROR_USER_NOT_FOUND = "User with name '%s' is not found.";
     @Autowired
-    private UserRepository userRepository;
+    private transient UserRepository userRepository;
     @Autowired
-    private RoleRepository roleRepository;
+    private transient RoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

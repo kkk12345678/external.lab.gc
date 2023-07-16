@@ -6,14 +6,15 @@ import jakarta.persistence.PersistenceContext;
 import org.example.gc.entity.Role;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Repository
-public class RoleRepositoryImpl implements RoleRepository {
+public class RoleRepositoryImpl implements RoleRepository, Serializable {
     private static final String JPQL_BY_NAME = "select t from Role t where t.name = :name";
     private static final String JPQL_ALL = "from Role";
     @PersistenceContext
-    private EntityManager entityManager;
+    private transient EntityManager entityManager;
 
     @Override
     public Role insertOrUpdate(Role role) {
