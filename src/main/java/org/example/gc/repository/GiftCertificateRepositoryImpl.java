@@ -9,10 +9,11 @@ import org.example.gc.parameters.GiftCertificateParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Repository
-public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
+public class GiftCertificateRepositoryImpl implements GiftCertificateRepository, Serializable {
     private static final String JPQL_SELECT_BY_NAME = "select gc from GiftCertificate gc where gc.name = :name";
     private static final String SEARCH_PATTERN = "%%%s%%";
     private static final String SPLIT_REGEX = ",";
@@ -26,9 +27,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private transient EntityManager entityManager;
     @Autowired
-    private TagRepository tagRepository;
+    private transient TagRepository tagRepository;
 
     @Override
     public List<GiftCertificate> getAll(GiftCertificateParameters parameters) {

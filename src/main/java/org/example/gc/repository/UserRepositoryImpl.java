@@ -8,15 +8,16 @@ import org.example.gc.entity.User;
 import org.example.gc.parameters.UserParameters;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl implements UserRepository, Serializable {
     private static final String JPQL_BY_NAME = "select t from User t where t.name = :name";
     private static final String JPQL_ALL = "from User";
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private transient EntityManager entityManager;
     @Override
     public User insertOrUpdate(User user) {
         entityManager.persist(user);

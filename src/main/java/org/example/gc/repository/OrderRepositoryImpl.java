@@ -7,14 +7,15 @@ import org.example.gc.entity.Order;
 import org.example.gc.parameters.OrderParameters;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Repository
-public class OrderRepositoryImpl implements OrderRepository {
+public class OrderRepositoryImpl implements OrderRepository, Serializable {
     private static final String JPQL_ALL = "from Order";
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private transient EntityManager entityManager;
 
     @Override
     public Order insertOrUpdate(Order order) {
