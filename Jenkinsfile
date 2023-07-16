@@ -9,11 +9,13 @@ pipeline {
                 }
             }
         }
-        stage('JaCoCo') {
-            steps {
-                junit '*/build/test-results/*.xml'
-                step( [ $class: 'JacocoPublisher' ] )
-            }
+
+        stage("Code coverage") {     
+	        steps {          
+			    bat "./gradlew jacocoTestReport"          
+			    publishHTML (target: [reportDir: 'build/reports/jacoco/test/html', reportFiles: 'index.html', reportName: "JaCoCo Report"])          
+			    bat "./gradlew jacocoTestCoverageVerification"     
+			}
         }
     }
 }
