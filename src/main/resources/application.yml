@@ -27,3 +27,6 @@ security:
   jwt:
     token:
       secret-key: ${JWT_SECRET}
+sonar:
+  login: admin
+  password: admin
