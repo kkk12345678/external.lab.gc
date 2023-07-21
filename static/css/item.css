@@ -1,0 +1,42 @@
+.item {
+    margin-top: 50px;
+}
+
+.details-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.image {
+    width: 70%;
+}
+
+img {
+    width: 90%;
+}
+
+.details {
+    width: 30%;
+}
+
+.time-left-label {
+    font-size: x-small;
+    color: #C0C0C0;
+}
+
+.price {
+    display: flex;
+    justify-content: space-between;
+}
+
+.temp {
+    display: flex;
+    margin-block-start: 1.33em;
+    margin-block-end: 1.33em;
+}
+
+.description {
+    width: 70%;
+}
+

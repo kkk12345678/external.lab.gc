@@ -1,0 +1,41 @@
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 50px 0px 50px 0px;
+}
+
+.category-button {
+    height: 30px;
+    width: 80px;
+    margin: 10px 5px 10px 5px;
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+}
+.item {
+    width: 310px;
+}
+
+.name, .description, .add-to-cart {
+    width: 75%;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.description {
+    font-size: x-small;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.expiration {
+    color: #C0C0C0;
+}

@@ -23,7 +23,7 @@ public class JwtTokenProvider implements Serializable {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Autowired
-    private UserDetailsService userDetailsService;
+    private transient UserDetailsService userDetailsService;
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
