@@ -4,7 +4,7 @@
 }
 
 body {
-    width: 90%;
+    width: 100%;
 }
 
 header {
@@ -44,9 +44,10 @@ span {
     width: 250px;
 }
 
-select {
+.header-select {
     height: 36px;
     margin-left: 5px;
+    width: 25%;
 }
 
 form {

@@ -1,0 +1,67 @@
+.header {
+    margin-top: 40px;
+    background-color: grey;
+    height: 40px;
+    display: flex;
+    align-content: center;
+}
+
+h1 {
+    margin-left: 30%;
+    color: white;
+    font-size: 1.0em;
+}
+
+.cart {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+}
+hr {
+    width: 100%;
+    position: relative;
+    border: none;
+    height: 2px;
+    background: grey;
+    margin-bottom: 20px;
+}
+
+
+.total {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-left: 50px;
+}
+
+.buttons {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+}
+
+.buttons > button {
+    width: 120px;
+    height: 26px;
+    border-radius: 1px;
+    border: 1px solid;
+    margin-right: 2px;
+}
+
+input[type="submit"] {
+    width: 120px;
+    height: 26px;
+    background-color: #00ff00;
+    border-radius: 1px;
+    border: 1px;
+    color: white;
+}
