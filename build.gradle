@@ -51,6 +51,10 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 }
 
+war {
+    archiveName = 'gc-app.war'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
