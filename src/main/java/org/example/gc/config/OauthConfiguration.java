@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class OauthConfiguration {
+    /*
     private static final List<String> clients = Arrays.asList("google", "facebook");
     private static final String CLIENT_PROPERTY_KEY
             = "spring.security.oauth2.client.registration.";
@@ -48,4 +49,5 @@ public class OauthConfiguration {
         }
         return null;
     }
+    */
 }
