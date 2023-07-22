@@ -22,7 +22,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                bat '''copy C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\SonarQube\\build\\libs\\gift-certificate-0.0.1-SNAPSHOT D:\\mdocs\\programming\\Programs\\apache-tomcat-8.5.81\\webapps\\gc-app.war'''
+                bat '''copy C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\SonarQube\\build\\libs\\gift-certificate-0.0.1-SNAPSHOT.war D:\\mdocs\\programming\\Programs\\apache-tomcat-8.5.81\\webapps\\gc-app.war'''
             }
         }
     }
