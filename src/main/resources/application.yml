@@ -32,4 +32,4 @@ sonar:
   password: admin
 server:
   servlet:
-    context-path: /gc-app
+    context-path: /gc-ap
