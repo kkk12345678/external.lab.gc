@@ -1,0 +1,22 @@
+{
+  "name": "gift-certificate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkk12345678/external.lab.gs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkk12345678/external.lab.gs/issues"
+  },
+  "homepage": "https://github.com/kkk12345678/external.lab.gs#readme",
+  "devDependencies": {
+    "jest": "^29.6.1"
+  }
+}
