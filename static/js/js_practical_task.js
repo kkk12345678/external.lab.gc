@@ -121,18 +121,6 @@ const redundant = (str) => {
     return () => {return str};
 }
 
-let moves = [];
-
-function move(n, from, to, via) {
-    if (n === 0) {
-        return;
-    }
-
-    move(n - 1, from, via, to);
-    moves.push([from, to]);
-    move(n - 1, via, to, from);
-}
-
 /**
  * https://en.wikipedia.org/wiki/Tower_of_Hanoi
  *
@@ -140,7 +128,15 @@ function move(n, from, to, via) {
  * @return {array}
  */
 const towerHanoi = (disks) => {
-    moves = [];
+    const moves = [];
+    function move(n, from, to, via) {
+        if (n === 0) {
+            return;
+        }
+        move(n - 1, from, via, to);
+        moves.push([from, to]);
+        move(n - 1, via, to, from);
+    }
     move(disks, 0, 2, 1);
     return moves;
 }
