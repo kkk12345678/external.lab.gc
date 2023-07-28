@@ -121,12 +121,13 @@ const redundant = (str) => {
     return () => {return str};
 }
 
-const moves = [];
+let moves = [];
 
 function move(n, from, to, via) {
     if (n === 0) {
         return;
     }
+
     move(n - 1, from, via, to);
     moves.push([from, to]);
     move(n - 1, via, to, from);
@@ -139,6 +140,7 @@ function move(n, from, to, via) {
  * @return {array}
  */
 const towerHanoi = (disks) => {
+    moves = [];
     move(disks, 0, 2, 1);
     return moves;
 }
@@ -191,46 +193,32 @@ const matrixMultiplication = (matrix1, matrix2) => {
  *      gather("a")("b")("c").order(2)(1)(0).get() ➞ "cba"
  *      gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get()  ➞ "hello"
  */
-const gather = (function (str) {
-    const array = [];
+const gather = (str)  => {
     const orders = [];
+    const array = [];
+    array.push(str);
+    const f = (str1) => {
+        array.push(str1);
+        return f;
+    }
+    f.order = (index) => {
+        orders.push(index);
 
-    function order(index) {
-        return function g(index, ...args) {
-            orders.push(index);
-            return (..._args) => {
-                return g(...args, ..._args);
+        const f = (index1) => {
+            orders.push(index1);
+            return f;
+        }
+        f.get = () => {
+            let result = "";
+            for (index in orders) {
+                result += array[orders[index]];
             }
+            return result;
         }
+        return f;
     }
-    return function f(str, ...args) {
-        array.push(str);
-        return (..._args) => {
-            return f(... args, ..._args);
-        }
-    }
-
-
-
-    /*
-    const order = (number)  => {
-        orders.push(number);
-        return gather;
-    }
-
-    const get = () => {
-        let result = "";
-        for (let i = 0; i < orders.length; i++) {
-            result += array[i];
-        }
-        return result;
-    }
-
-
-     */
-
-})();
-
+    return f;
+};
 
 module.exports = {secondsToDate, toBase2Converter, substringOccurrencesCounter,
     repeatingLitters, redundant, matrixMultiplication, towerHanoi, gather};

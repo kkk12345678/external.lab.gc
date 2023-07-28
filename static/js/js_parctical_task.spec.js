@@ -171,7 +171,15 @@ describe("towerHanoi() test.", () => {
 });
 
 describe("gather() test.", () => {
-   test ("Returns 7 moves for 3 disks.", () => {
-      expect(gather("h")("e")("l")("l")("o").order(0)).toStrictEqual("h");
+   test ('Returns "abc" for gather("a")("b")("c").order(0)(1)(2).get().', () => {
+      expect(gather("a")("b")("c").order(0)(1)(2).get()).toStrictEqual("abc");
+   });
+
+   test ('Returns "cba" for gather("a")("b")("c").order(2)(1)(0).get().', () => {
+      expect(gather("a")("b")("c").order(2)(1)(0).get()).toStrictEqual("cba");
+   });
+
+   test ('Returns "hello!" for gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get(.', () => {
+      expect(gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get()).toStrictEqual("hello!");
    });
 });
