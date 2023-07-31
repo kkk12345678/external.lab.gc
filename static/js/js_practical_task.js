@@ -80,21 +80,22 @@ const substringOccurrencesCounter = (substring, text) => {
  *
  * @example
  *      "Hello" -> "HHeelloo"
- *      "Hello world" -> "HHeello  wworrldd" // o, l is repeated more then once. Space was also repeated
+ *      "Hello world" -> "HHeello  wworrldd" // o, l is repeated more than once. Space was also repeated
  */
-const repeatingLitters = (string) => {
-    const set = new Set();
-    if (string.length === 0) {
-        return "";
-    }
+const repeatingLetters = (string) => {
+    const map = new Map();
     let result = "";
     for (let i = 0; i < string.length; i++) {
         const letter = string.charAt(i);
-        if (set.has(string.charAt(i))) {
-            result += string.charAt(i);
-        } else {
+        let occurrences = map.get(letter);
+        map.set(letter, occurrences === undefined ? 1 : occurrences + 1);
+    }
+    for (let i = 0; i < string.length; i++) {
+        const letter = string.charAt(i);
+        if (map.get(letter) === 1) {
             result += letter + letter;
-            set.add(letter);
+        } else {
+            result += letter;
         }
     }
     return result;
@@ -193,15 +194,14 @@ const gather = (str)  => {
     const orders = [];
     const array = [];
     array.push(str);
-    const f = (str1) => {
-        array.push(str1);
+    const f = (str) => {
+        array.push(str);
         return f;
     }
     f.order = (index) => {
         orders.push(index);
-
-        const f = (index1) => {
-            orders.push(index1);
+        const f = (index) => {
+            orders.push(index);
             return f;
         }
         f.get = () => {
@@ -217,4 +217,4 @@ const gather = (str)  => {
 };
 
 module.exports = {secondsToDate, toBase2Converter, substringOccurrencesCounter,
-    repeatingLitters, redundant, matrixMultiplication, towerHanoi, gather};
+    repeatingLetters: repeatingLetters, redundant, matrixMultiplication, towerHanoi, gather};

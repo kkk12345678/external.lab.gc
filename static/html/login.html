@@ -19,10 +19,8 @@
         </a>
     </div>
     <div class="header-item">
-        <input class="search" type="text" placeholder="Search by item name">
-        <select class="header-select">
-            <option class="option" selected value="0">All categories</option>
-        </select>
+        <label><input class="search" type="text" placeholder="Search by item name"></label>
+        <label><select class="header-select"><option class="option" selected value="0">All categories</option></select></label>
     </div>
     <div class="header-item">
         <div class="icon">
@@ -34,11 +32,11 @@
         <a class="header-link" href="signup.html">Sign up</a>
     </div>
 </header>
-    <form action="users/login" method="post">
+    <form action="../../../users/login" method="post">
         <div class="login">
             <div class="form-item"><img src="../img/user.png" alt="User's logo"></div>
-            <div class="form-item"><input class="form-input" name="name" type="text" placeholder="Login"/></div>
-            <div class="form-item"><input class="form-input" name="password" type="password" placeholder="Password"/></div>
+            <div class="form-item"><label><input class="form-input" name="name" type="text" placeholder="Login"/></label></div>
+            <div class="form-item"><label><input class="form-input" name="password" type="password" placeholder="Password"/></label></div>
             <div class="form-item"><input class="form-button" type="submit" value="Login"></div>
         </div>
     </form>

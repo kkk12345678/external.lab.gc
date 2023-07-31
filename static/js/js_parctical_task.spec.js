@@ -1,5 +1,5 @@
 const {secondsToDate, toBase2Converter, substringOccurrencesCounter,
-   repeatingLitters, redundant, matrixMultiplication, towerHanoi, gather}
+   repeatingLetters, redundant, matrixMultiplication, towerHanoi, gather}
     = require("./js_practical_task");
 
 describe("SecondsToDate() test.", () => {
@@ -12,7 +12,7 @@ describe("SecondsToDate() test.", () => {
    });
 
    test("Illegal argument - valid string.", () => {
-      expect(secondsToDate(Number("86400.201"))).toStrictEqual(new Date(2020, 6, 2));
+      expect(secondsToDate("86400.201")).toStrictEqual(new Date(2020, 6, 2));
    });
 
    test("Illegal argument - invalid string.", () => {
@@ -97,11 +97,11 @@ describe("substringOccurrencesCounter() test.", () => {
 
 describe("repeatingLitters() test.", () => {
    test("Returns 'HHeelloo' for 'Hello''.", () => {
-      expect(repeatingLitters("Hello")).toStrictEqual("HHeellloo");
+      expect(repeatingLetters("Hello")).toStrictEqual("HHeelloo");
    });
 
-   test("Returns 'HHeelloo' for 'Hello''.", () => {
-      expect(repeatingLitters("Hello world")).toStrictEqual("HHeellloo  wworrldd");
+   test("Returns 'HHeello  wworrldd' for 'Hello world''.", () => {
+      expect(repeatingLetters("Hello world")).toStrictEqual("HHeello  wworrldd");
    });
 });
 
