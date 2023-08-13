@@ -1,0 +1,6 @@
+<h2>Form component</h2>
+<form [formGroup]="nameForm" (ngSubmit)="onSubmit()">
+  <label for="name">Name: </label>
+  <input type="text" id="name" name="name" formControlName="name">
+  <button type="submit">Submit</button>
+</form>
