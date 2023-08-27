@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.Order;
+import lombok.extern.slf4j.Slf4j;
 import org.example.gc.entity.*;
 import org.example.gc.parameters.GiftCertificateParameters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @Repository
+@Slf4j
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository, Serializable {
     private static final String JPQL_SELECT_BY_NAME = "select gc from GiftCertificate gc where gc.name = :name";
     private static final String SEARCH_PATTERN = "%%%s%%";
@@ -50,6 +52,20 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository,
         entityManager.persist(giftCertificate);
         return giftCertificate;
     }
+
+    @Override
+    public long count(GiftCertificateParameters giftCertificateParameters) {
+        String searchString = (giftCertificateParameters.getSearch() == null) ? "" : giftCertificateParameters.getSearch()[0].split(",")[1];
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<GiftCertificate> root = criteriaQuery.from(GiftCertificate.class);
+        criteriaQuery
+                .select(criteriaBuilder.count(root))
+                .where(criteriaBuilder.like(root.get(FIELD_NAME), String.format(SEARCH_PATTERN, searchString)));
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
+
 
     @Override
     public void delete(GiftCertificate giftCertificate) {

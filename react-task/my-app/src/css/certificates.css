@@ -1,0 +1,32 @@
+.div-table {
+    width: 800px;
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.div-edit-modal-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.div-row {
+
+}
+
+.div-footer {
+    width: 100%;
+    margin: 50px;
+    display: flex;
+    justify-content: right;
+}
+.div-select {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+}
+
+.div-pagination {
+    width: 70%;
+}

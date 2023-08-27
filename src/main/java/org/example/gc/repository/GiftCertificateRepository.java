@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GiftCertificateRepository extends EntityRepository<GiftCertificate> {
     List<GiftCertificate> getAll(GiftCertificateParameters parameters);
+    long count(GiftCertificateParameters giftCertificateParameters);
 }

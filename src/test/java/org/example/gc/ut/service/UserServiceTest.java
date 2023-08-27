@@ -1,14 +1,17 @@
 package org.example.gc.ut.service;
 
 import org.example.gc.dto.UserDto;
+import org.example.gc.dto.UserLoginDto;
 import org.example.gc.dto.UserSignupDto;
 import org.example.gc.entity.Role;
 import org.example.gc.entity.User;
 import org.example.gc.exception.AlreadyExistsException;
 
+import org.example.gc.exception.NoSuchUserException;
 import org.example.gc.parameters.UserParameters;
 import org.example.gc.repository.RoleRepository;
 import org.example.gc.repository.UserRepository;
+import org.example.gc.security.JwtTokenProvider;
 import org.example.gc.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -47,6 +50,9 @@ class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @Mock
     private UserRepository userRepository;
 
@@ -80,61 +86,57 @@ class UserServiceTest {
         userParameters.setLimit(0);
         assertEquals(emptyList, userService.getAll(userParameters));
     }
-/*
+
+    /*
     @Test
-    void testAddNewTag() {
+    void testAddNew() {
         user.setId(null);
         Mockito.when(userRepository.getByName(NAME)).thenReturn(null);
         Mockito.when(userRepository.insertOrUpdate(user)).thenReturn(user);
-        UserSignupDto dto = new UserSignupDto();
-        dto.setName(NAME);
-        dto.setPassword(PASSWORD);
+        UserSignupDto dto = new UserSignupDto(NAME, PASSWORD);
         Mockito.when(passwordEncoder.encode(PASSWORD)).thenReturn(new BCryptPasswordEncoder().encode("1"));
         Mockito.when(roleRepository.getByName("user")).thenReturn(ROLE_USER);
         user.setId(ID);
         assertEquals(user.toDto(), userService.add(dto));
         user.setId(ID);
     }
-/*
+*/
     @Test
     void testAddWhenExists() {
-        TagDto dto = new TagDto(NAME);
-        Mockito.when(tagRepository.getByName(NAME)).thenReturn(tag);
-        assertThrows(AlreadyExistsException.class, () -> tagService.add(dto));
+        UserSignupDto dto = new UserSignupDto(NAME, PASSWORD);
+        Mockito.when(userRepository.getByName(NAME)).thenReturn(user);
+        assertThrows(AlreadyExistsException.class, () -> userService.add(dto));
     }
-/*
+
     @Test
     void testRemoveWhenExists() {
-        Mockito.when(tagRepository.getById(ID)).thenReturn(tag);
-        Mockito.doNothing().when(tagRepository).delete(tag);
-        assertDoesNotThrow(() -> tagService.remove(ID));
+        Mockito.when(userRepository.getById(ID)).thenReturn(user);
+        Mockito.doNothing().when(userRepository).delete(user);
+        assertDoesNotThrow(() -> userService.remove(ID));
     }
 
     @Test
     void testRemoveWhenDoesNotExist() {
-        Mockito.when(tagRepository.getById(ID)).thenReturn(null);
-        assertThrows(NoSuchElementException.class, () -> tagService.remove(ID));
+        Mockito.when(userRepository.getById(ID)).thenReturn(null);
+        assertThrows(NoSuchElementException.class, () -> userService.remove(ID));
     }
 
     @Test
     void testGetByIdWhenExists() {
-
-        Mockito.when(tagRepository.getById(ID)).thenReturn(tag);
-        assertEquals(tag, tagService.getById(ID));
+        Mockito.when(userRepository.getById(ID)).thenReturn(user);
+        assertEquals(user.toDto(), userService.getById(ID));
     }
 
     @Test
     void testGetByIdWhenDoesNotExist() {
-        Mockito.when(tagRepository.getById(ID)).thenReturn(null);
-        assertThrows(NoSuchElementException.class, () -> tagService.getById(ID));
+        Mockito.when(userRepository.getById(ID)).thenReturn(null);
+        assertThrows(NoSuchElementException.class, () -> userService.getById(ID));
     }
 
     @Test
-    void testGetMostValuable() {
-        Tag tag = new Tag(ID, NAME);
-        Mockito.when(tagRepository.getMostValuable()).thenReturn(tag);
-        assertEquals(tag, tagService.getMostValuable());
+    void testLoginWhenExistsAndPasswordInvalid() {
+        Mockito.when(userRepository.getByName(NAME)).thenReturn(user);
+        UserLoginDto dto = new UserLoginDto(NAME, PASSWORD);
+        assertThrows(NoSuchUserException.class, () -> userService.login(dto));
     }
-
- */
 }

@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   jpa:
     show-sql: false
@@ -5,9 +7,9 @@ spring:
       ddl-auto: none
   datasource:
     url: jdbc:mysql://localhost:3306/gc
-    #url: jdbc:mysql://awseb-e-b9ihrmbsug-stack-awsebrdsdatabase-4mlr4hgnyqri.ch1kpk7wfhb0.eu-central-1.rds.amazonaws.com:3306/ebdb
     username: root
-    password: ${DB_PASS}
+    password: x2Aht9LND6g3
+    #password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     oauth2:
@@ -26,10 +28,9 @@ spring:
 security:
   jwt:
     token:
-      secret-key: ${JWT_SECRET}
+      secret-key: my-32-character-ultra-secure-and-ultra-long-secret
+      #secret-key: ${JWT_SECRET}
+
 sonar:
   login: admin
   password: admin
-server:
-  servlet:
-    context-path: /gc-app

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../css/all.css">
+    <link rel="stylesheet" href="../css/add.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add item</title>
+</head>
+<body>
+<header>
+    <div class="header-item">
+        <a class="header-link" href="index.html">
+            <div class="icon">
+                <span class="material-icons">menu</span>
+                <span>Logo</span>
+            </div>
+        </a>
+    </div>
+    <div class="header-item">
+        <input class="search" type="text" placeholder="Search by item name">
+        <select class="header-select">
+            <option class="option" selected value="0">All categories</option>
+        </select>
+    </div>
+    <div class="header-item">
+        <div class="icon">
+            <a href="#"><span class="material-icons">favorite</span></a>
+            <a href="#"><span class="material-icons">shopping_cart</span></a>
+        </div>
+        <a class="header-link" href="login.html">Login</a>
+        <p>&nbsp|&nbsp</p>
+        <a class="header-link" href="signup.html">Sign up</a>
+    </div>
+</header>
+<div class="wrapper">
+    <div class="header">
+        <h1>Add New Coupon</h1>
+    </div>
+    <div class="form-wrapper">
+        <form action="#" method="post">
+            <div class="form">
+                <div class="form-row-label">
+                    <label>Company</label>
+                    <label>Item Name</label>
+                </div>
+                <div class="form-row-input">
+                    <input type="text" name="company">
+                    <input type="text" name="name">
+                </div>
+                <div class="form-row-label">
+                    <label>Category</label>
+                    <label>Short Description</label>
+                </div>
+                <div class="form-row-input">
+                    <select>
+                        <option class="option" selected value="0">Category Name</option>
+                    </select>
+                    <input type="text" name="short-description">
+                </div>
+                <div class="form-row-label">
+                    <label>Valid To</label>
+                    <label></label>
+                </div>
+                <div class="form-row-input">
+                    <input type="date" name="date">
+                    <input type="text" hidden>
+                </div>
+                <div class="form-row-label">
+                    <label>Price</label>
+                    <label>Long Description</label>
+                </div>
+                <div class="form-row-input">
+                    <input type="number" step=".01" name="price">
+                    <input type="text" name="long-description">
+                </div>
+                <div class="form-row-label">
+                    <label>Images</label>
+                    <label></label>
+                </div>
+                <div class="images-upload">
+                    <label class="upload-label" for="images-input"><span class="material-icons">collections</span></label>
+                    <input id="images-input" type="file" name="images" accept="image/*" multiple>
+                </div>
+                <div class="buttons">
+                    <button>Cancel</button>
+                    <input type="submit" value="Save">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
