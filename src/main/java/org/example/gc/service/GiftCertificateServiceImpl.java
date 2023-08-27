@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -28,6 +29,7 @@ public class GiftCertificateServiceImpl extends AbstractService implements GiftC
     private static final String MESSAGE_GIFT_CERTIFICATES_FOUND =
             "%d gift certificates were successfully found.";
 
+    Random random = new Random();
 
     @Autowired
     private GiftCertificateRepository giftCertificateRepository;
@@ -110,6 +112,11 @@ public class GiftCertificateServiceImpl extends AbstractService implements GiftC
     }
 
     @Override
+    public long count(GiftCertificateParameters giftCertificateParameters) {
+        return giftCertificateRepository.count(giftCertificateParameters);
+    }
+
+    @Override
     public List<GiftCertificate> getAll(GiftCertificateParameters giftCertificateParameters) {
         List<GiftCertificate> giftCertificates =
                 giftCertificateRepository.getAll(giftCertificateParameters);
@@ -135,5 +142,22 @@ public class GiftCertificateServiceImpl extends AbstractService implements GiftC
                 .filter(name -> !existingNames.contains(name))
                 .forEach(name -> tags.add(new Tag(name)));
         giftCertificate.setTags(tags);
+    }
+
+    void create() {
+        if (giftCertificateRepository.getAll(new GiftCertificateParameters()).isEmpty()) {
+            GiftCertificateInsertDto dto = new GiftCertificateInsertDto();
+            Set<TagDto> tags = new HashSet<>();
+            IntStream.range(0, 1000).forEach(i -> {
+                tags.clear();
+                IntStream.range(0, random.nextInt(5)).forEach(j -> tags.add(new TagDto("Tag" + j)));
+                dto.setName("gc" + i);
+                dto.setDescription("Some description");
+                dto.setPrice(random.nextDouble(150));
+                dto.setDuration(random.nextInt(30));
+                dto.setTags(tags);
+                add(dto);
+            });
+        }
     }
 }

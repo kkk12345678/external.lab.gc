@@ -2,7 +2,9 @@ package org.example.gc.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class UserSignupDto extends UserLoginDto {
     public UserSignupDto(
             @NotBlank(message = "User parameter 'name' must not be empty.")

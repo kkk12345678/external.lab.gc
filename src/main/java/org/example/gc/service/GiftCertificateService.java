@@ -12,6 +12,7 @@ public interface GiftCertificateService {
     GiftCertificate getByName(String name);
     GiftCertificate add(GiftCertificateInsertDto dto);
     void remove(Long id);
+    long count(GiftCertificateParameters giftCertificateParameters);
     GiftCertificate update(Long id, GiftCertificateUpdateDto dto);
     List<GiftCertificate> getAll(GiftCertificateParameters giftCertificateParameters);
 }
